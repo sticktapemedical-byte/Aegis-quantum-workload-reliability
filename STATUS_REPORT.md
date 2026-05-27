@@ -68,3 +68,8 @@ This repository presents Q-SRE as an original proposed engineering branch by the
 
 The current public release line is `v0.1.x`.
 
+## Contact
+
+For technical review, collaboration, licensing questions, or implementation discussion, open a GitHub Issue on the public repository or contact the author through the GitHub profile:
+
+`@sticktapemedical-byte`

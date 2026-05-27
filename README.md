@@ -165,3 +165,9 @@ Each live cycle result includes:
 ## License
 
 This repository is distributed under the license terms in `LICENSE`.
+
+## Contact
+
+For technical review, collaboration, licensing questions, or implementation discussion, open a GitHub Issue on this repository or contact the author through the GitHub profile:
+
+`@sticktapemedical-byte`
