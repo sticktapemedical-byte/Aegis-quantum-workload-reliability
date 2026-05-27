@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-Aegis Quantum OS Monolith is a full-stack Quantum Site Reliability Engineering (Q-SRE) control-plane simulation for mediating probabilistic hardware interfaces. It models how classical reliability engineering patterns can observe, score, gate, and preserve useful operational continuity across noisy telemetry streams, adversarial node behavior, cryptographic lineage events, and hardware-inspired timing constraints.
+Aegis Quantum OS Monolith introduces Quantum Site Reliability Engineering (Q-SRE) as a proposed engineering discipline for operating high-entropy probabilistic systems with classical reliability controls. AEGIS is the reference implementation: a full-stack Q-SRE control-plane simulation for mediating probabilistic hardware interfaces. It models how classical reliability engineering patterns can observe, score, gate, and preserve useful operational continuity across noisy telemetry streams, adversarial node behavior, cryptographic lineage events, and hardware-inspired timing constraints.
 
 The project is written for infrastructure engineers, site reliability engineers, distributed systems reviewers, security auditors, and hardware observability teams who need a runnable demonstration of a continuity kernel, live telemetry monitor, stress injection deck, and forensic artifact exporter.
 
