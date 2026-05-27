@@ -154,7 +154,7 @@ Open:
 
 `http://127.0.0.1:8765`
 
-The monitor includes a Qiskit simulator ingestion panel with live QST-style overlap fidelity, `T1`/`T2` relaxation/dephasing readouts, Qiskit noise-scale controls, a QEM calibration toggle, and a `STATE_LEAKAGE_RECON` stress mode that reports leaked channel indices and Solve-for-X reconstruction score. The panel also exposes `Run Qiskit Pass`, `Save Qiskit JSON`, `Export Qiskit JSON`, and `Import Qiskit JSON` controls so reviewers can generate a bridge artifact, persist it on the local server, download it, or reload a prior bridge run.
+The monitor includes a Qiskit simulator ingestion panel with live QST-style overlap fidelity, `T1`/`T2` relaxation/dephasing readouts, Qiskit noise-scale controls, a QEM calibration toggle, and a `STATE_LEAKAGE_RECON` stress mode that reports leaked channel indices and Solve-for-X reconstruction score. The panel also exposes `Run Qiskit Pass`, `Stop Qiskit Only`, `Save Qiskit JSON`, `Export Qiskit JSON`, and `Import Qiskit JSON` controls so reviewers can generate a bridge artifact, cancel only the Qiskit bridge loop without stopping the live monitor, persist it on the local server, download it, or reload a prior bridge run.
 
 Run automated regression tests:
 
@@ -202,15 +202,18 @@ The tests use plain Python assertions and are compatible with pytest:
 
 1. Builds a 4-qubit GHZ circuit.
 2. Runs it on a Qiskit Aer simulator with thermal relaxation and depolarizing noise.
-3. Converts noisy shot counts into expectation-value telemetry.
-4. Maps that telemetry into the AEGIS 5-variable environment grid and `NodeTelemetry` inputs.
-5. Emits normal AEGIS cycle outputs, including governance states, `.QOM` payload bits, and Merkle lineage.
+3. Optionally injects coherent crosstalk with parasitic `RXX`/`RZZ` operations between adjacent virtual qubits.
+4. Applies monitor-controlled Qiskit noise scaling, weak-measurement efficiency, and leakage-lambda telemetry degradation.
+5. Converts noisy shot counts into expectation-value telemetry.
+6. Maps that telemetry into the AEGIS 5-variable environment grid and `NodeTelemetry` inputs.
+7. Emits normal AEGIS cycle outputs, including governance states, `.QOM` payload bits, and Merkle lineage.
 
 The bridge is intentionally optional so the core repository remains runnable with the Python standard library.
 
 When the live monitor is running, the Qiskit bridge is also exposed through local HTTP endpoints:
 
-- `POST /api/qiskit/run?cycles=6&shots=2048&seed=2026`: runs the optional Qiskit Aer bridge and writes `monitor_snapshots/qiskit_bridge_*.json`.
+- `POST /api/qiskit/run?cycles=6&shots=2048&seed=2026&noise_scale=1.0&crosstalk_inject=false&leakage_lambda=0.0&measurement_efficiency=0.82`: runs the optional Qiskit Aer bridge and writes `monitor_snapshots/qiskit_bridge_*.json`.
+- `POST /api/qiskit/stop`: requests cancellation of the Qiskit bridge loop without stopping the live monitor, report exports, or local server.
 - `GET /api/qiskit/latest`: returns the newest bridge or imported bridge artifact.
 - `GET /api/qiskit/export`: returns the current bridge artifact for dashboard download.
 - `POST /api/qiskit/import`: accepts a prior bridge JSON payload, stores it as `monitor_snapshots/qiskit_import_*.json`, and loads it into the monitor.

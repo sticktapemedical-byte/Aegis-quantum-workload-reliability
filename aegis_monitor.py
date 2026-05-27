@@ -30,6 +30,8 @@ from aegis_kernel import (
 WORKSPACE = Path(__file__).resolve().parent
 SNAPSHOT_DIR = WORKSPACE / "monitor_snapshots"
 LATEST_QISKIT_BRIDGE: dict[str, object] | None = None
+QISKIT_STOP_EVENT = threading.Event()
+QISKIT_RUNNING = False
 
 
 def build_monitor_payload(cycles: int = 1000, seed: int = 2026) -> dict[str, object]:
@@ -82,16 +84,40 @@ def write_json_artifact(prefix: str, payload: dict[str, object]) -> Path:
     return path
 
 
-def run_qiskit_bridge_payload(cycles: int = 6, shots: int = 2048, seed: int = 2026) -> dict[str, object]:
+def run_qiskit_bridge_payload(
+    cycles: int = 6,
+    shots: int = 2048,
+    seed: int = 2026,
+    noise_scale: float = 1.0,
+    crosstalk_inject: bool = False,
+    leakage_lambda: float = 0.0,
+    measurement_efficiency: float = 0.82,
+) -> dict[str, object]:
     from examples.qiskit_bridge import run_bridge
 
-    results = run_bridge(cycles=cycles, shots=shots, seed=seed)
+    results = run_bridge(
+        cycles=cycles,
+        shots=shots,
+        seed=seed,
+        noise_scale=noise_scale,
+        crosstalk_inject=crosstalk_inject,
+        leakage_lambda=leakage_lambda,
+        measurement_efficiency=measurement_efficiency,
+        stop_event=QISKIT_STOP_EVENT,
+    )
     return {
         "artifact_type": "qiskit_bridge_run",
         "generated_at_unix": time.time(),
         "seed": seed,
         "cycles": cycles,
         "shots": shots,
+        "stopped_by_operator": QISKIT_STOP_EVENT.is_set(),
+        "bridge_parameters": {
+            "noise_scale": noise_scale,
+            "crosstalk_inject": crosstalk_inject,
+            "leakage_lambda": leakage_lambda,
+            "measurement_efficiency": measurement_efficiency,
+        },
         "results": results,
         "summary": {
             "epochs": len(results),
@@ -204,7 +230,11 @@ def build_health_payload() -> dict[str, object]:
             "zne_lambda_slider": True,
             "qiskit_noise_scale_slider": True,
             "qem_calibration_toggle": True,
+            "qiskit_crosstalk_injection_toggle": True,
+            "qiskit_leakage_lambda_slider": True,
+            "qiskit_measurement_efficiency_slider": True,
             "run_qiskit_bridge_button": True,
+            "stop_qiskit_bridge_button": True,
             "save_qiskit_bridge_json_button": True,
             "export_qiskit_bridge_json_button": True,
             "import_qiskit_bridge_json_button": True,
@@ -240,6 +270,7 @@ def build_health_payload() -> dict[str, object]:
             "qiskit_bridge_latest": "/api/qiskit/latest",
             "qiskit_bridge_export": "/api/qiskit/export",
             "qiskit_bridge_import": "/api/qiskit/import",
+            "qiskit_bridge_stop": "/api/qiskit/stop",
             "artifact_list": "/api/artifacts",
             "server_stop": "/api/stop",
             "health_check": "/api/health",
@@ -289,6 +320,7 @@ def build_health_payload() -> dict[str, object]:
             "t1_t2_relaxation_tracking": True,
             "qem_calibration_controls": True,
             "qiskit_bridge_run_save_import_export": True,
+            "qiskit_independent_stop_control": True,
             "snapshot_and_report_exports": True,
         },
     }
@@ -311,6 +343,8 @@ class LiveRuntime:
             "rb_interleave": False,
             "zne_lambda": 1.00,
             "qiskit_noise_scale": 1.00,
+            "qiskit_leakage_lambda": 0.00,
+            "qiskit_crosstalk_inject": False,
             "qem_calibration": False,
             "relativistic_comp": True,
         }
@@ -346,6 +380,7 @@ class LiveRuntime:
                 "innovation_eta",
                 "zne_lambda",
                 "qiskit_noise_scale",
+                "qiskit_leakage_lambda",
             ]:
                 if key in payload:
                     self.control_state[key] = float(payload[key])
@@ -355,6 +390,8 @@ class LiveRuntime:
                 self.control_state["rb_interleave"] = bool(payload["rb_interleave"])
             if "qem_calibration" in payload:
                 self.control_state["qem_calibration"] = bool(payload["qem_calibration"])
+            if "qiskit_crosstalk_inject" in payload:
+                self.control_state["qiskit_crosstalk_inject"] = bool(payload["qiskit_crosstalk_inject"])
             if "relativistic_comp" in payload:
                 self.control_state["relativistic_comp"] = bool(payload["relativistic_comp"])
             self.kernel.config.theta_backaction = float(self.control_state["theta_backaction"])
@@ -609,12 +646,13 @@ class LiveRuntime:
         disruption: str,
     ) -> dict[str, object]:
         noise_scale = max(0.1, min(5.0, float(self.control_state["qiskit_noise_scale"])))
+        leakage_lambda = max(0.0, min(1.0, float(self.control_state["qiskit_leakage_lambda"])))
         qem_enabled = bool(self.control_state["qem_calibration"])
         q_conf = float(cycle.get("q_conf", 0.0))
         risk = float(cycle.get("raw_unsafe_output_risk", 0.0))
         environmental_severity = float(cycle.get("environmental_severity", 0.0))
-        leakage_active = disruption == "state_leakage_recon"
-        crosstalk_active = disruption == "crosstalk_leakage"
+        leakage_active = disruption == "state_leakage_recon" or leakage_lambda > 0.0
+        crosstalk_active = disruption == "crosstalk_leakage" or bool(self.control_state["qiskit_crosstalk_inject"])
         qem_delta = 0.035 + (0.018 * min(noise_scale, 3.0)) if qem_enabled else 0.0
         qst_overlap_fidelity = max(
             0.0,
@@ -635,7 +673,12 @@ class LiveRuntime:
         dephasing_slope = 1.0 / max(t2_us, 1e-9)
         leakage_probability = max(
             0.0,
-            min(1.0, (0.018 * noise_scale) + (0.24 if leakage_active else 0.0) + (0.10 if crosstalk_active else 0.0)),
+            min(
+                1.0,
+                (0.018 * noise_scale)
+                + (0.24 * max(leakage_lambda, 1.0 if disruption == "state_leakage_recon" else 0.0))
+                + (0.10 if crosstalk_active else 0.0),
+            ),
         )
         leaked_channels = [
             index
@@ -715,6 +758,8 @@ class LiveRuntime:
                 "rb_interleave": self.control_state["rb_interleave"],
                 "zne_lambda": self.control_state["zne_lambda"],
                 "qiskit_noise_scale": self.control_state["qiskit_noise_scale"],
+                "qiskit_leakage_lambda": self.control_state["qiskit_leakage_lambda"],
+                "qiskit_crosstalk_inject": self.control_state["qiskit_crosstalk_inject"],
                 "qem_calibration": self.control_state["qem_calibration"],
                 "relativistic_comp": self.control_state["relativistic_comp"],
             }
@@ -1043,6 +1088,10 @@ HTML = r"""<!doctype html>
         <label>Qiskit noise <span id="qiskitNoiseVal">1.00</span>
           <input id="qiskitNoise" type="range" min="0.10" max="5.00" step="0.05" value="1.00">
         </label>
+        <label>Leakage lambda <span id="qiskitLeakVal">0.00</span>
+          <input id="qiskitLeakage" type="range" min="0.00" max="1.00" step="0.01" value="0.00">
+        </label>
+        <label><input id="qiskitXtalk" type="checkbox" style="width:auto; min-height:auto;"> X_TALK_INJECT</label>
         <label><input id="qemCalibration" type="checkbox" style="width:auto; min-height:auto;"> QEM calibration</label>
       </div>
       <div class="controlTile">
@@ -1103,6 +1152,7 @@ HTML = r"""<!doctype html>
           <h2>Qiskit Simulator Ingestion</h2>
           <div class="actions">
             <button id="runQiskit">Run Qiskit Pass</button>
+            <button id="stopQiskit" class="danger">Stop Qiskit Only</button>
             <button id="saveQiskit">Save Qiskit JSON</button>
             <button id="exportQiskit">Export Qiskit JSON</button>
             <button id="importQiskit">Import Qiskit JSON</button>
@@ -1598,6 +1648,7 @@ function renderQiskitArtifactStatus() {
     `Qiskit artifact: ${latestQiskitArtifact.artifact_type || "qiskit_bridge_run"}`,
     `generated=${generated}`,
     `epochs=${summary.epochs ?? latestQiskitArtifact.cycles ?? "N/A"}`,
+    `stopped=${latestQiskitArtifact.stopped_by_operator ? "yes" : "no"}`,
     `mean_q_conf=${fmt(summary.mean_q_conf, 6)}`,
     `gate_pass_count=${summary.gate_pass_count ?? "N/A"}`,
     `final_merkle_root=${summary.final_merkle_root || "N/A"}`
@@ -1845,8 +1896,19 @@ async function loadLatestQiskitArtifact() {
 
 async function runQiskitPass() {
   const seed = Number(el("seed").value || 2026);
+  const params = new URLSearchParams({
+    cycles: "24",
+    shots: "2048",
+    seed: String(seed),
+    noise_scale: String(Number(el("qiskitNoise").value || 1.00)),
+    crosstalk_inject: String(el("qiskitXtalk").checked),
+    leakage_lambda: String(Number(el("qiskitLeakage").value || 0.00)),
+    measurement_efficiency: String(Number(el("innovationEta").value || 0.82))
+  });
   el("qiskitArtifact").textContent = "Running Qiskit Aer bridge and saving server artifact...";
-  const res = await fetch(`/api/qiskit/run?cycles=6&shots=2048&seed=${encodeURIComponent(seed)}`, { method: "POST" });
+  el("runQiskit").disabled = true;
+  try {
+  const res = await fetch(`/api/qiskit/run?${params.toString()}`, { method: "POST" });
   const data = await res.json();
   if (data.status === "error") {
     el("qiskitArtifact").textContent = `Qiskit bridge error: ${data.error}`;
@@ -1859,6 +1921,15 @@ async function runQiskitPass() {
   el("artifact").textContent = `Qiskit bridge run saved on server and downloaded: ${data.path}`;
   renderQiskitArtifactStatus();
   await loadArtifacts();
+  } finally {
+    el("runQiskit").disabled = false;
+  }
+}
+
+async function stopQiskitPass() {
+  const res = await fetch("/api/qiskit/stop", { method: "POST" });
+  const data = await res.json();
+  el("qiskitArtifact").textContent = `${data.status}: Qiskit stop requested. Live monitor remains active.`;
 }
 
 async function saveQiskitJson() {
@@ -1968,6 +2039,8 @@ function controlPayload() {
     innovation_eta: Number(el("innovationEta").value || 0.82),
     zne_lambda: Number(el("zneLambda").value || 1.00),
     qiskit_noise_scale: Number(el("qiskitNoise").value || 1.00),
+    qiskit_leakage_lambda: Number(el("qiskitLeakage").value || 0.00),
+    qiskit_crosstalk_inject: el("qiskitXtalk").checked,
     reviewer_mode: el("reviewerMode").checked,
     rb_interleave: el("rbInterleave").checked,
     qem_calibration: el("qemCalibration").checked,
@@ -1985,6 +2058,7 @@ function syncControlLabels() {
   el("etaVal").textContent = Number(el("innovationEta").value).toFixed(2);
   el("zneVal").textContent = Number(el("zneLambda").value).toFixed(2);
   el("qiskitNoiseVal").textContent = Number(el("qiskitNoise").value).toFixed(2);
+  el("qiskitLeakVal").textContent = Number(el("qiskitLeakage").value).toFixed(2);
   const reviewer = el("reviewerMode").checked;
   document.body.classList.toggle("reviewer", reviewer);
   el("reviewerModeToggle").textContent = reviewer ? "Reviewer Mode: ON" : "Reviewer Mode: OFF";
@@ -2092,7 +2166,7 @@ el("stopLive").addEventListener("click", stopLive);
 el("resetLive").addEventListener("click", resetLive);
 el("refresh").addEventListener("click", loadData);
 el("reviewerModeToggle").addEventListener("click", toggleReviewerMode);
-["disruption", "spoofPercent", "kpGain", "kdGain", "thetaBackaction", "anchorLambda", "omegaDrive", "innovationEta", "zneLambda", "qiskitNoise", "reviewerMode", "rbInterleave", "qemCalibration", "relativisticComp"].forEach(id => {
+["disruption", "spoofPercent", "kpGain", "kdGain", "thetaBackaction", "anchorLambda", "omegaDrive", "innovationEta", "zneLambda", "qiskitNoise", "qiskitLeakage", "qiskitXtalk", "reviewerMode", "rbInterleave", "qemCalibration", "relativisticComp"].forEach(id => {
   el(id).addEventListener("input", pushControls);
   el(id).addEventListener("change", pushControls);
 });
@@ -2103,6 +2177,7 @@ el("birthCert").addEventListener("click", forensicCertificate);
 el("snapshot").addEventListener("click", () => createArtifact("snapshot"));
 el("report").addEventListener("click", () => createArtifact("report"));
 el("runQiskit").addEventListener("click", runQiskitPass);
+el("stopQiskit").addEventListener("click", stopQiskitPass);
 el("saveQiskit").addEventListener("click", saveQiskitJson);
 el("exportQiskit").addEventListener("click", exportQiskitJson);
 el("importQiskit").addEventListener("click", importQiskitJson);
@@ -2162,7 +2237,10 @@ class MonitorHandler(BaseHTTPRequestHandler):
             self.send_payload(json_bytes(list_artifacts()))
             return
         if parsed.path == "/api/health":
-            self.send_payload(json_bytes(build_health_payload()))
+            payload = build_health_payload()
+            payload["qiskit_bridge_running"] = QISKIT_RUNNING
+            payload["qiskit_stop_requested"] = QISKIT_STOP_EVENT.is_set()
+            self.send_payload(json_bytes(payload))
             return
         if parsed.path in {"/api/qiskit/latest", "/api/qiskit/export"}:
             payload = latest_qiskit_bridge_payload()
@@ -2192,7 +2270,7 @@ class MonitorHandler(BaseHTTPRequestHandler):
         self.send_error(HTTPStatus.NOT_FOUND, "Not found")
 
     def do_POST(self) -> None:
-        global LATEST_QISKIT_BRIDGE
+        global LATEST_QISKIT_BRIDGE, QISKIT_RUNNING
         parsed = urlparse(self.path)
         query = parse_qs(parsed.query)
         cycles = int(query.get("cycles", ["1000"])[0])
@@ -2229,16 +2307,39 @@ class MonitorHandler(BaseHTTPRequestHandler):
             self.send_payload(json_bytes({"path": str(path), "payload": certificate}))
             return
         if parsed.path == "/api/qiskit/run":
+            if QISKIT_RUNNING:
+                self.send_payload(json_bytes({"status": "error", "error": "Qiskit bridge is already running."}))
+                return
+            QISKIT_STOP_EVENT.clear()
             q_cycles = max(1, min(50, int(query.get("cycles", ["6"])[0])))
             shots = max(128, min(8192, int(query.get("shots", ["2048"])[0])))
+            noise_scale = max(0.1, min(5.0, float(query.get("noise_scale", ["1.0"])[0])))
+            crosstalk_inject = str(query.get("crosstalk_inject", ["false"])[0]).lower() in {"1", "true", "yes", "on"}
+            leakage_lambda = max(0.0, min(1.0, float(query.get("leakage_lambda", ["0.0"])[0])))
+            measurement_efficiency = max(0.1, min(1.0, float(query.get("measurement_efficiency", ["0.82"])[0])))
             try:
-                payload = run_qiskit_bridge_payload(cycles=q_cycles, shots=shots, seed=seed)
+                QISKIT_RUNNING = True
+                payload = run_qiskit_bridge_payload(
+                    cycles=q_cycles,
+                    shots=shots,
+                    seed=seed,
+                    noise_scale=noise_scale,
+                    crosstalk_inject=crosstalk_inject,
+                    leakage_lambda=leakage_lambda,
+                    measurement_efficiency=measurement_efficiency,
+                )
             except Exception as exc:
                 self.send_payload(json_bytes({"status": "error", "error": str(exc)}))
                 return
+            finally:
+                QISKIT_RUNNING = False
             LATEST_QISKIT_BRIDGE = payload
             path = write_json_artifact("qiskit_bridge", payload)
             self.send_payload(json_bytes({"status": "ok", "path": str(path), "payload": payload}))
+            return
+        if parsed.path == "/api/qiskit/stop":
+            QISKIT_STOP_EVENT.set()
+            self.send_payload(json_bytes({"status": "QISKIT_STOP_REQUESTED", "qiskit_bridge_running": QISKIT_RUNNING}))
             return
         if parsed.path == "/api/qiskit/import":
             try:
