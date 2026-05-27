@@ -10,6 +10,12 @@ Target audience: infrastructure engineers, SREs, distributed systems reviewers, 
 
 Scope note: this is a software simulation and control-plane framework. It does not claim to physically modify quantum hardware, erase physical noise, or bypass known limits of quantum mechanics. Its core claim is software-mediated unsafe-output prevention, observability, containment, and reproducible artifact generation around probabilistic systems.
 
+## Support the Engineering Runway
+
+If you want to back the development of this open-source control plane simulation, quantum error mitigation tuning metrics, or low-level FPGA register targets, consider supporting the research runway:
+
+- **Support via Buy Me a Coffee:** [Support Aegis Q-SRE Lab on Buy Me a Coffee](https://buymeacoffee.com/aegisqsrelab)
+
 ## Core Technical Metrics
 
 Current public simulation metrics:
@@ -135,4 +141,3 @@ For technical review, collaboration, licensing questions, or implementation disc
 ## License
 
 This repository is distributed under the terms in `LICENSE`.
-
