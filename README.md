@@ -10,6 +10,14 @@ Target audience: infrastructure engineers, SREs, distributed systems reviewers, 
 
 Scope note: this is a software simulation and control-plane framework. It does not claim to physically modify quantum hardware, erase physical noise, or bypass known limits of quantum mechanics. Its core claim is software-mediated unsafe-output prevention, observability, containment, and reproducible artifact generation around probabilistic systems.
 
+## License And Commercial Use
+
+This repository is published for noncommercial research, evaluation, education, benchmarking, and technical review under the terms in `LICENSE`.
+
+Commercial use is not included in the public license. Production deployment, proprietary product integration, hosted service use, paid consulting delivery, internal enterprise platform integration, commercial redistribution, or use of the project identity in a commercial offer requires a separate written commercial license.
+
+See `COMMERCIAL_LICENSE.md` for the commercial-use notice.
+
 ## Support the Engineering Runway
 
 If you want to back the development of this open-source control plane simulation, quantum error mitigation tuning metrics, or low-level FPGA register targets, consider supporting the research runway:
@@ -173,7 +181,8 @@ If Qiskit is not installed, install the optional integration packages in a separ
 - `aegis_os.py`: terminal runner managing deterministic execution, report output, and reviewer-mode telemetry switches.
 - `aegis_monitor.py`: loopback HTTP server orchestrating the live diagnostic dashboard, stressor controls, exports, and health endpoints.
 - `README.md`: technical specification handbook and deployment guide.
-- `LICENSE`: Apache License 2.0.
+- `LICENSE`: PolyForm Noncommercial License 1.0.0.
+- `COMMERCIAL_LICENSE.md`: commercial-use notice and contact path.
 
 ## Automated Testing
 
@@ -244,4 +253,4 @@ For technical review, collaboration, licensing questions, or implementation disc
 
 ## License
 
-This repository is distributed under the terms in `LICENSE`.
+This repository is distributed under the noncommercial terms in `LICENSE`. Commercial use requires a separate written commercial license; see `COMMERCIAL_LICENSE.md`.
