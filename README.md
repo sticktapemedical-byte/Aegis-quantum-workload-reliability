@@ -148,7 +148,7 @@ Open:
 
 Run automated regression tests:
 
-`python -m pip install pytest`
+`python -m pip install -r requirements-dev.txt`
 
 `python -m pytest tests/`
 
@@ -158,13 +158,15 @@ Run the optional Qiskit Aer bridge:
 
 If Qiskit is not installed, install the optional integration packages in a separate environment:
 
-`python -m pip install qiskit qiskit-aer`
+`python -m pip install -r requirements-qiskit.txt`
 
 ## Repository File Map
 
 - `.github/FUNDING.yml`: external support link configuration.
 - `examples/qiskit_bridge.py`: optional Qiskit Aer bridge that maps noisy GHZ circuit counts into AEGIS telemetry inputs.
 - `tests/test_kernel.py`: pytest-compatible regression suite for crypto sealing, holdover aborts, and Riemann phase continuity.
+- `requirements-dev.txt`: local test-runner dependency file.
+- `requirements-qiskit.txt`: optional Qiskit bridge dependency file.
 - `aegis_kernel.py`: core control-plane logic, mathematical registers, governance states, Monte Carlo metrics, `.QOM` frames, Merkle lineage, and multiplicative trust matrices.
 - `aegis_os.py`: terminal runner managing deterministic execution, report output, and reviewer-mode telemetry switches.
 - `aegis_monitor.py`: loopback HTTP server orchestrating the live diagnostic dashboard, stressor controls, exports, and health endpoints.
