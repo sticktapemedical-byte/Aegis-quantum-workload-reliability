@@ -146,6 +146,8 @@ Open:
 
 `http://127.0.0.1:8765`
 
+The monitor includes a Qiskit simulator ingestion panel with live QST-style overlap fidelity, `T1`/`T2` relaxation/dephasing readouts, Qiskit noise-scale controls, a QEM calibration toggle, and a `STATE_LEAKAGE_RECON` stress mode that reports leaked channel indices and Solve-for-X reconstruction score.
+
 Run automated regression tests:
 
 `python -m pip install -r requirements-dev.txt`

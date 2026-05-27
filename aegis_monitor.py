@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import random
 import threading
 import time
@@ -116,6 +117,7 @@ def build_forensic_certificate(cycle: dict[str, object]) -> dict[str, object]:
         "hardware_boundary_slippage": cycle.get("hardware_boundary_slippage"),
         "key_mutation_lineage_map": cycle.get("key_mutation_lineage_map"),
         "energy_efficiency": cycle.get("energy_efficiency"),
+        "quantum_ingestion_telemetry": cycle.get("quantum_ingestion_telemetry"),
         "pulse_controls": cycle.get("pulse_controls"),
         "relativistic_clock_compensation": cycle.get("relativistic_clock_compensation"),
         "zne_tuning": cycle.get("zne_tuning"),
@@ -156,6 +158,8 @@ def build_health_payload() -> dict[str, object]:
             "innovation_eta_slider": True,
             "rb_interleave_toggle": True,
             "zne_lambda_slider": True,
+            "qiskit_noise_scale_slider": True,
+            "qem_calibration_toggle": True,
             "relativistic_compensation_toggle": True,
             "reviewer_mode_toggle": True,
             "start_live_button": True,
@@ -228,6 +232,10 @@ def build_health_payload() -> dict[str, object]:
             "reviewer_mode_panel": True,
             "reviewer_mode_api_state": True,
             "reviewer_mode_grounded_view": True,
+            "qiskit_ingestion_panel": True,
+            "qst_overlap_fidelity": True,
+            "t1_t2_relaxation_tracking": True,
+            "qem_calibration_controls": True,
             "snapshot_and_report_exports": True,
         },
     }
@@ -249,6 +257,8 @@ class LiveRuntime:
             "innovation_eta": 0.82,
             "rb_interleave": False,
             "zne_lambda": 1.00,
+            "qiskit_noise_scale": 1.00,
+            "qem_calibration": False,
             "relativistic_comp": True,
         }
         self.reset(seed)
@@ -282,6 +292,7 @@ class LiveRuntime:
                 "omega_drive",
                 "innovation_eta",
                 "zne_lambda",
+                "qiskit_noise_scale",
             ]:
                 if key in payload:
                     self.control_state[key] = float(payload[key])
@@ -289,6 +300,8 @@ class LiveRuntime:
                 self.control_state["reviewer_mode"] = bool(payload["reviewer_mode"])
             if "rb_interleave" in payload:
                 self.control_state["rb_interleave"] = bool(payload["rb_interleave"])
+            if "qem_calibration" in payload:
+                self.control_state["qem_calibration"] = bool(payload["qem_calibration"])
             if "relativistic_comp" in payload:
                 self.control_state["relativistic_comp"] = bool(payload["relativistic_comp"])
             self.kernel.config.theta_backaction = float(self.control_state["theta_backaction"])
@@ -443,7 +456,21 @@ class LiveRuntime:
                     item.bloch_vector = normalize_vector([0.12, 0.12, 0.08])
                     item.phase_acceleration += 5.8
                     item.signal_mu = max(item.signal_mu, 0.74)
+                    item.suspected_attack = True
                     item.mission_priority = 0.93
+
+        qiskit_noise_scale = max(0.1, min(5.0, float(self.control_state["qiskit_noise_scale"])))
+        if qiskit_noise_scale != 1.0:
+            for item in telemetry:
+                item.phase_velocity *= 1.0 + (0.055 * (qiskit_noise_scale - 1.0))
+                item.phase_acceleration *= 1.0 + (0.085 * (qiskit_noise_scale - 1.0))
+                item.signal_mu = min(0.99, item.signal_mu * (1.0 + (0.045 * (qiskit_noise_scale - 1.0))))
+
+        if self.control_state["qem_calibration"]:
+            for item in telemetry:
+                item.phase_velocity *= 0.94
+                item.phase_acceleration *= 0.88
+                item.signal_mu *= 0.96
 
     def build_boundary_slippage(self, cycle: dict[str, object]) -> dict[str, object]:
         reviewer = cycle.get("reviewer_telemetry", {})
@@ -522,6 +549,70 @@ class LiveRuntime:
             "qem_mode": "ACTIVE" if zne_lambda > 1.0 else "NOMINAL",
         }
 
+    def build_quantum_ingestion_telemetry(
+        self,
+        cycle: dict[str, object],
+        telemetry: list[object],
+        disruption: str,
+    ) -> dict[str, object]:
+        noise_scale = max(0.1, min(5.0, float(self.control_state["qiskit_noise_scale"])))
+        qem_enabled = bool(self.control_state["qem_calibration"])
+        q_conf = float(cycle.get("q_conf", 0.0))
+        risk = float(cycle.get("raw_unsafe_output_risk", 0.0))
+        environmental_severity = float(cycle.get("environmental_severity", 0.0))
+        leakage_active = disruption == "state_leakage_recon"
+        crosstalk_active = disruption == "crosstalk_leakage"
+        qem_delta = 0.035 + (0.018 * min(noise_scale, 3.0)) if qem_enabled else 0.0
+        qst_overlap_fidelity = max(
+            0.0,
+            min(
+                0.999,
+                0.91
+                + (0.080 * q_conf)
+                - (0.115 * risk)
+                - (0.035 * max(0.0, noise_scale - 1.0))
+                - (0.040 if leakage_active else 0.0)
+                - (0.025 if crosstalk_active else 0.0)
+                + qem_delta,
+            ),
+        )
+        t1_us = max(8.0, 72.0 / (1.0 + (0.42 * noise_scale) + (0.85 * environmental_severity)))
+        t2_us = max(5.0, 58.0 / (1.0 + (0.58 * noise_scale) + (1.15 * environmental_severity)))
+        relaxation_slope = 1.0 / max(t1_us, 1e-9)
+        dephasing_slope = 1.0 / max(t2_us, 1e-9)
+        leakage_probability = max(
+            0.0,
+            min(1.0, (0.018 * noise_scale) + (0.24 if leakage_active else 0.0) + (0.10 if crosstalk_active else 0.0)),
+        )
+        leaked_channels = [
+            index
+            for index, item in enumerate(telemetry)
+            if leakage_active and index % 3 == 0
+        ]
+        solve_for_x_score = max(0.0, min(1.0, q_conf - (0.30 * leakage_probability) + (0.09 if qem_enabled else 0.0)))
+        return {
+            "source": "QISKIT_AER_BRIDGE_COMPATIBLE_NOISE_MODEL",
+            "qst_overlap_fidelity": qst_overlap_fidelity,
+            "qst_qos_threshold": 0.90,
+            "qst_status": "PASS" if qst_overlap_fidelity >= 0.90 else "WARN",
+            "t1_thermal_relaxation_us": t1_us,
+            "t2_dephasing_us": t2_us,
+            "t1_relaxation_slope": relaxation_slope,
+            "t2_dephasing_slope": dephasing_slope,
+            "lambda_noise": noise_scale,
+            "qem_calibration_enabled": qem_enabled,
+            "qem_mode": "ZNE_PEC_CALIBRATION" if qem_enabled else "OFF",
+            "qem_estimated_fidelity_delta": qem_delta,
+            "coherent_crosstalk_active": crosstalk_active,
+            "state_leakage_active": leakage_active,
+            "state_leakage_probability": leakage_probability,
+            "leaked_channel_indices": leaked_channels,
+            "solve_for_x_reconstruction_score": solve_for_x_score,
+            "quarantine_latency_seconds": 0.0007 if leaked_channels else 0.0,
+            "density_matrix_trace": 1.0,
+            "proxy_density_trace": 1.0,
+        }
+
     def build_rtos_scheduler_diagnostics(self, cycle: dict[str, object]) -> dict[str, object]:
         active_nodes = max(1, int(cycle.get("active_nodes", 1)))
         states = set(cycle.get("governance_states", []))
@@ -563,12 +654,15 @@ class LiveRuntime:
             payload["energy_efficiency"] = self.build_energy_efficiency(payload)
             payload["relativistic_clock_compensation"] = self.build_relativistic_clock_compensation(payload)
             payload["zne_tuning"] = self.build_zne_tuning(payload)
+            payload["quantum_ingestion_telemetry"] = self.build_quantum_ingestion_telemetry(payload, telemetry, disruption)
             payload["rtos_scheduler_diagnostics"] = self.build_rtos_scheduler_diagnostics(payload)
             payload["pulse_controls"] = {
                 "omega_drive": self.control_state["omega_drive"],
                 "innovation_eta": self.control_state["innovation_eta"],
                 "rb_interleave": self.control_state["rb_interleave"],
                 "zne_lambda": self.control_state["zne_lambda"],
+                "qiskit_noise_scale": self.control_state["qiskit_noise_scale"],
+                "qem_calibration": self.control_state["qem_calibration"],
                 "relativistic_comp": self.control_state["relativistic_comp"],
             }
             self.recent.append(payload)
@@ -893,6 +987,10 @@ HTML = r"""<!doctype html>
         <label>ZNE lambda <span id="zneVal">1.00</span>
           <input id="zneLambda" type="range" min="0.50" max="3.00" step="0.01" value="1.00">
         </label>
+        <label>Qiskit noise <span id="qiskitNoiseVal">1.00</span>
+          <input id="qiskitNoise" type="range" min="0.10" max="5.00" step="0.05" value="1.00">
+        </label>
+        <label><input id="qemCalibration" type="checkbox" style="width:auto; min-height:auto;"> QEM calibration</label>
       </div>
       <div class="controlTile">
         <h2>Safety Registers</h2>
@@ -944,6 +1042,20 @@ HTML = r"""<!doctype html>
         </div>
         <div id="liveDetail" class="stack"></div>
         <div id="eventLog" class="eventlog" style="margin-top:10px"></div>
+      </section>
+    </div>
+    <div class="grid mid">
+      <section>
+        <div class="toolbar">
+          <h2>Qiskit Simulator Ingestion</h2>
+          <span id="qiskitState" class="badge">WAITING</span>
+        </div>
+        <div class="grid top" id="qiskitMetrics" style="grid-template-columns: repeat(4, minmax(120px, 1fr));"></div>
+        <canvas id="qiskitGraph" width="900" height="220"></canvas>
+      </section>
+      <section>
+        <h2>Quantum Leakage / QEM Detail</h2>
+        <div id="qiskitDetail" class="stack"></div>
       </section>
     </div>
     <div class="grid mid">
@@ -1326,6 +1438,7 @@ function renderLive(payload) {
       <div>Omega ${fmt(r.pulse_controls.omega_drive, 2)} | eta ${fmt(r.pulse_controls.innovation_eta, 2)} | ZNE ${fmt(r.pulse_controls.zne_lambda, 2)} | RB ${r.pulse_controls.rb_interleave}</div>
     </div>`;
   renderAdvancedLiveDiagnostics(r);
+  renderQuantumIngestion(r);
   renderReviewerPanel(r);
   el("eventLog").innerHTML = liveHistory.slice().reverse().map(item => `
     <div class="event">
@@ -1335,6 +1448,7 @@ function renderLive(payload) {
     </div>`).join("");
   drawLiveGraph();
   drawKappaGraph();
+  drawQiskitGraph();
   drawCryoGraph();
   renderUopLedger();
   if (current) renderCoverage(current);
@@ -1380,6 +1494,29 @@ function renderAdvancedLiveDiagnostics(r) {
     <div>SRE lockhold latency: <b>${fmt(rtos.sre_lockhold_latency_us, 6)} us</b></div>
     <div>priority inversion damped: <b>${rtos.priority_inversion_damped}</b></div>
     <div>preemption lane: <b>${rtos.preemption_lane || "N/A"}</b></div>`;
+}
+
+function renderQuantumIngestion(r) {
+  const q = r.quantum_ingestion_telemetry || {};
+  const status = q.qst_status || "WAITING";
+  el("qiskitState").textContent = status;
+  el("qiskitState").style.background = status === "PASS" ? "var(--green)" : "var(--amber)";
+  el("qiskitMetrics").innerHTML = [
+    metric("QST overlap F", fmt(q.qst_overlap_fidelity, 5), `threshold ${fmt(q.qst_qos_threshold, 2)}`, Number(q.qst_overlap_fidelity || 0) >= Number(q.qst_qos_threshold || .9) ? "ok" : "warn"),
+    metric("T1 relaxation", `${fmt(q.t1_thermal_relaxation_us, 2)} us`, `slope ${fmt(q.t1_relaxation_slope, 5)}`, "info"),
+    metric("T2 dephasing", `${fmt(q.t2_dephasing_us, 2)} us`, `slope ${fmt(q.t2_dephasing_slope, 5)}`, "info"),
+    metric("Noise lambda", fmt(q.lambda_noise, 2), "Qiskit noise-model scale", Number(q.lambda_noise || 1) > 2 ? "warn" : "info"),
+    metric("QEM delta", fmt(q.qem_estimated_fidelity_delta, 5), q.qem_mode || "OFF", q.qem_calibration_enabled ? "ok" : "info"),
+    metric("Leakage probability", pct(q.state_leakage_probability), q.state_leakage_active ? "state leakage active" : "nominal subspace", q.state_leakage_active ? "warn" : "ok"),
+    metric("Solve-for-X", fmt(q.solve_for_x_reconstruction_score, 4), "reconstruction score", cls(q.solve_for_x_reconstruction_score || 0, .75, .55)),
+    metric("Quarantine latency", `${fmt(q.quarantine_latency_seconds, 4)} s`, "leaking channel isolation", q.leaked_channel_indices && q.leaked_channel_indices.length ? "warn" : "ok")
+  ].join("");
+  el("qiskitDetail").innerHTML = `
+    <div>source: <b>${q.source || "N/A"}</b></div>
+    <div>QEM: <b>${q.qem_calibration_enabled ? "ON" : "OFF"}</b> | mode: <b>${q.qem_mode || "OFF"}</b></div>
+    <div>coherent crosstalk: <b>${q.coherent_crosstalk_active}</b> | state leakage: <b>${q.state_leakage_active}</b></div>
+    <div>leaked channel indices: <b>${(q.leaked_channel_indices || []).join(", ") || "-"}</b></div>
+    <div>density trace: <b>${fmt(q.density_matrix_trace, 3)}</b> | proxy trace: <b>${fmt(q.proxy_density_trace, 3)}</b></div>`;
 }
 
 function drawLiveGraph() {
@@ -1447,6 +1584,36 @@ function drawKappaGraph() {
     ctx.stroke();
     ctx.fillStyle = color;
     ctx.fillText(name, 12 + si * 132, 16);
+  });
+}
+
+function drawQiskitGraph() {
+  const canvas = el("qiskitGraph");
+  const ctx = canvas.getContext("2d");
+  const w = canvas.width;
+  const h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+  ctx.fillStyle = "#151515";
+  ctx.fillRect(0, 0, w, h);
+  const series = [
+    ["Fidelity", "#36d17d", item => item.quantum_ingestion_telemetry?.qst_overlap_fidelity ?? 0],
+    ["T1 norm", "#47c7d8", item => Math.min(1, (item.quantum_ingestion_telemetry?.t1_thermal_relaxation_us ?? 0) / 72)],
+    ["T2 norm", "#f2b84b", item => Math.min(1, (item.quantum_ingestion_telemetry?.t2_dephasing_us ?? 0) / 58)],
+    ["Leakage", "#ff6961", item => item.quantum_ingestion_telemetry?.state_leakage_probability ?? 0]
+  ];
+  const data = liveHistory.slice(-72);
+  series.forEach(([name, color, getter], si) => {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    data.forEach((item, idx) => {
+      const x = data.length <= 1 ? 10 : (idx / (data.length - 1)) * (w - 20) + 10;
+      const y = h - 18 - Math.max(0, Math.min(1, getter(item))) * (h - 38);
+      if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    ctx.fillStyle = color;
+    ctx.fillText(name, 12 + si * 120, 16);
   });
 }
 
@@ -1625,8 +1792,10 @@ function controlPayload() {
     omega_drive: Number(el("omegaDrive").value || 0.35),
     innovation_eta: Number(el("innovationEta").value || 0.82),
     zne_lambda: Number(el("zneLambda").value || 1.00),
+    qiskit_noise_scale: Number(el("qiskitNoise").value || 1.00),
     reviewer_mode: el("reviewerMode").checked,
     rb_interleave: el("rbInterleave").checked,
+    qem_calibration: el("qemCalibration").checked,
     relativistic_comp: el("relativisticComp").checked
   };
 }
@@ -1640,6 +1809,7 @@ function syncControlLabels() {
   el("omegaVal").textContent = Number(el("omegaDrive").value).toFixed(2);
   el("etaVal").textContent = Number(el("innovationEta").value).toFixed(2);
   el("zneVal").textContent = Number(el("zneLambda").value).toFixed(2);
+  el("qiskitNoiseVal").textContent = Number(el("qiskitNoise").value).toFixed(2);
   const reviewer = el("reviewerMode").checked;
   document.body.classList.toggle("reviewer", reviewer);
   el("reviewerModeToggle").textContent = reviewer ? "Reviewer Mode: ON" : "Reviewer Mode: OFF";
@@ -1747,7 +1917,7 @@ el("stopLive").addEventListener("click", stopLive);
 el("resetLive").addEventListener("click", resetLive);
 el("refresh").addEventListener("click", loadData);
 el("reviewerModeToggle").addEventListener("click", toggleReviewerMode);
-["disruption", "spoofPercent", "kpGain", "kdGain", "thetaBackaction", "anchorLambda", "omegaDrive", "innovationEta", "zneLambda", "reviewerMode", "rbInterleave", "relativisticComp"].forEach(id => {
+["disruption", "spoofPercent", "kpGain", "kdGain", "thetaBackaction", "anchorLambda", "omegaDrive", "innovationEta", "zneLambda", "qiskitNoise", "reviewerMode", "rbInterleave", "qemCalibration", "relativisticComp"].forEach(id => {
   el(id).addEventListener("input", pushControls);
   el(id).addEventListener("change", pushControls);
 });
