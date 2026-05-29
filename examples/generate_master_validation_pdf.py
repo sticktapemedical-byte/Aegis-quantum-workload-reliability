@@ -357,7 +357,7 @@ def build_pdf(output: Path) -> None:
     styles["BodyText"].leading = 10
 
     story: list[Any] = []
-    story.append(p("AEGIS Master IBM Quantum Validation Report", styles["TitleCenter"]))
+    story.append(p("AEGIS IBM Quantum Validation Report", styles["TitleCenter"]))
     story.append(p(f"Generated {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} local time", styles["BodyText"]))
     story.append(Spacer(1, 0.15 * inch))
     story.append(p("Claim Boundary", styles["Heading2"]))
@@ -380,7 +380,7 @@ def build_pdf(output: Path) -> None:
         leftMargin=0.35 * inch,
         topMargin=0.35 * inch,
         bottomMargin=0.35 * inch,
-        title="AEGIS Master IBM Quantum Validation Report",
+        title="AEGIS IBM Quantum Validation Report",
     )
     doc.build(story)
 

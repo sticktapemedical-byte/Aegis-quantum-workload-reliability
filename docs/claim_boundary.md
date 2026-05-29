@@ -12,9 +12,9 @@ AEGIS can reject, warn on, or fail-close lower-quality returned outputs and can 
 
 ## Claim To Earn With More Controlled Evidence
 
-AEGIS-selected control policies improved measured coherence-sensitive workload survival under tested conditions.
+AEGIS-selected control policies may improve measured coherence-sensitive workload survival under tested conditions when validated against matched baselines.
 
-This wording is intentionally narrower than saying the system improves physical coherence.
+This wording is intentionally narrower than claiming a change to hardware-level coherence.
 
 ## Do Not Claim
 
@@ -27,8 +27,8 @@ This wording is intentionally narrower than saying the system improves physical 
 
 ## Future Claim Class Only After Stronger Evidence
 
-Any claim about changing effective coherence behavior must be reserved for future controlled results with matched baselines, higher shot counts, confidence intervals, and negative-result handling.
+Any stronger claim about hardware-level behavior must be reserved for future controlled results with matched baselines, higher shot counts, confidence intervals, and negative-result handling.
 
 Until then, use:
 
-> AEGIS-selected control policies improved measured coherence-sensitive workload survival under tested conditions.
+> AEGIS-selected control policies improved measured workload survival metrics under tested conditions.

@@ -1,4 +1,4 @@
-# AEGIS Master IBM Quantum Validation Report
+# AEGIS IBM Quantum Validation Report
 
 Generated from real IBM Quantum Runtime jobs executed on May 28, 2026.
 
@@ -45,7 +45,7 @@ Most individual runs use 128 to 512 shots, with one 1024-shot GHZ run, one 4096-
 
 | Test | Backend | Job ID | Shots | Primary Result | AEGIS Result | Purpose |
 |---|---|---:|---:|---:|---|---|
-| Initial 4-qubit GHZ hardware ingestion | `ibm_marrakesh` | `d8cf0vr8ch0s738uppq0` | 1024 | GHZ population `94.24%`, raw non-GHZ `5.76%` | Continuity passed, `NORMAL` | First real hardware ingestion proof for GHZ counts, `.QOM`, and Merkle lineage. |
+| Initial 4-qubit GHZ hardware ingestion | `ibm_marrakesh` | `d8cf0vr8ch0s738uppq0` | 1024 | GHZ population `94.24%`, raw non-GHZ `5.76%` | Continuity passed, `NORMAL` | First recorded real-hardware ingestion example for GHZ counts, `.QOM`, and Merkle lineage. |
 | Same-backend repeatability | `ibm_marrakesh` | `d8cf7cj8ch0s738uq3qg` | 512 | GHZ population `96.09%`, raw non-GHZ `3.91%` | Continuity passed, `NORMAL` | Same backend comparison with lower shot count. |
 | High-shot GHZ stability | `ibm_marrakesh` | `d8cfjoijki0s73ar75bg` | 4096 | GHZ population `95.19%`, raw non-GHZ `4.81%` | Continuity passed, `NORMAL` | Higher-shot GHZ run for a stronger single-condition estimate. |
 | Idle-delay stress | `ibm_marrakesh` | `d8cf7n47avuc73dqtus0` | 128 | GHZ population `95.31%`, raw non-GHZ `4.69%` | Continuity passed, `NORMAL` | Added a 1 ms declared circuit delay before the CNOT cascade to test delay-stress ingestion. |
@@ -54,7 +54,7 @@ Most individual runs use 128 to 512 shots, with one 1024-shot GHZ run, one 4096-
 | Fast single-qubit coherence/readout pass | `ibm_marrakesh` | `d8cfb5j8ch0s738uqcd0` | 256 | `P(0)=53.13%`, `P(1)=46.88%`, phase estimate `1.5083 rad` | Continuity passed, `NORMAL` | Lightweight single-qubit physical data stream for fast ingestion validation. |
 | Long-form continuous phase sweep | `ibm_marrakesh` | `d8cfc8ijki0s73ar6ri0` | 1280 | Mean `q_conf=0.94838` | Failed closed after unannounced phase changes | Proved the kernel does not silently accept discontinuous trajectory jumps as valid continuity. |
 | Corrected commanded setpoint sweep | `ibm_marrakesh` | `d8cfd4ijki0s73ar6tkg` | 640 | Setpoints `5/5`, mean abs error `0.0063` | `NORMAL`; no anchor dispute | Reframed each phase as an intentional calibration target with a fresh anchor window. |
-| Corrected full-capacity setpoint sweep | `ibm_marrakesh` | `d8cfdvqjki0s73ar6uog` | 1280 | Setpoints `5/5`, mean abs error `0.0219` | `NORMAL`; final `.QOM` generated | Fuller corrected setpoint run with 256 shots per phase. |
+| Corrected setpoint sweep | `ibm_marrakesh` | `d8cfdvqjki0s73ar6uog` | 1280 | Setpoints `5/5`, mean abs error `0.0219` | `NORMAL`; final `.QOM` generated | Corrected setpoint run with 256 shots per phase. |
 | High-shot commanded setpoint sweep | `ibm_marrakesh` | `d8cfk538amns73bjg5gg` | 5120 | Setpoints `5/5`, mean abs error `0.0043` | `NORMAL`; final `.QOM` generated | Higher-resolution commanded setpoint validation with 1024 shots per phase. |
 | Readout mitigation comparison | `ibm_marrakesh` | `d8cfma2jki0s73ar78a0` | 3072 | Raw GHZ `95.41%`; locally mitigated GHZ `96.86%`; delta `+1.45 pp` | Raw AEGIS continuity passed, `NORMAL` | Compared raw counts, basic local readout assignment mitigation, and AEGIS governance over the raw data path. |
 | Small VQE-style variational scan | `ibm_marrakesh` | `d8cfmgs7avuc73dqumgg` | 3072 | Best toy-H2 energy `-1.0210` at `theta=0.2` | First theta passed; later theta changes failed closed as a continuous track | Demonstrated ingestion of optimization-style circuit outputs instead of only GHZ/setpoint circuits. |
@@ -66,7 +66,7 @@ Most individual runs use 128 to 512 shots, with one 1024-shot GHZ run, one 4096-
 - Multi-backend GHZ ingestion completed across `ibm_marrakesh`, `ibm_kingston`, and `ibm_fez`.
 - All GHZ bridge runs generated valid 176-bit `.QOM` metadata frames and Merkle lineage roots.
 - The 1 ms idle-delay GHZ stress run stayed in `NORMAL` governance and passed continuity.
-- The first continuous phase sweep intentionally failed closed under apparent anchor drift, validating fail-closed behavior.
+- The first continuous phase sweep intentionally failed closed under apparent anchor drift, exercising fail-closed behavior.
 - The corrected commanded-setpoint sweeps passed all setpoint checks after the test declared each phase as an intentional calibration target.
 - The 4096-shot GHZ run produced `95.19%` target-state population and passed continuity under `NORMAL` governance.
 - The 1024-shot-per-phase setpoint sweep passed `5/5` commanded setpoints with mean absolute error `0.0043`.

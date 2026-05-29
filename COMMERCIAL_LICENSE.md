@@ -1,6 +1,6 @@
 # Commercial Licensing
 
-Aegis Quantum OS Monolith is publicly available for noncommercial research, evaluation, education, benchmarking, and technical review under the terms in `LICENSE`.
+AEGIS Quantum Workload Reliability is publicly available for noncommercial research, evaluation, education, benchmarking, and technical review under the terms in `LICENSE`.
 
 Commercial use is not included in the public license.
 

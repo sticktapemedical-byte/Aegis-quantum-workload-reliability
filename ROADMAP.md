@@ -34,14 +34,14 @@ This roadmap separates implemented software from simulation models, future hardw
 - Integration with laboratory quantum device logs or vendor simulator traces.
 - Larger multi-node parameter sweeps beyond the current 12-node default.
 
-## Speculative Research
+## Research Directions
 
 - Site reliability engineering patterns for probabilistic hardware interfaces.
-- Production-grade `.QOM` middleware semantics.
-- Long-distance mesh telemetry orchestration.
-- Hardware-aware economic scheduling models.
+- Compact metadata semantics for governed workload outputs.
+- Multi-backend telemetry orchestration.
+- Hardware-aware scheduling and resource accounting models.
 
 ## Naming Guidance
 
-For technical review, use **site reliability control plane** or **simulation framework for probabilistic telemetry**. Avoid presenting the project as a physical "Quantum OS" unless explicitly discussing long-term vision or historical branding.
+For technical review, use **quantum workload reliability framework**, **site reliability control plane**, or **simulation framework for probabilistic telemetry**. Do not present the project as a physical quantum operating system.
 
