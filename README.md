@@ -63,6 +63,24 @@ Observed synthetic cascade variance reductions:
 - Taylor-domain projection: asynchronous timing-slew drift is reduced from approximately `0.0633` to `0.0055`.
 - Wrapped-delta phase unwrapping: wrapped phase-cut acceleration variance is reduced from approximately `0.2354` to `8.09e-08` in synthetic trials.
 
+## Real Hardware Validation: IBM Quantum `ibm_marrakesh`
+
+On May 28, 2026, `examples/ibm_bridge.py` executed a 4-qubit GHZ circuit on IBM Quantum hardware through IBM Quantum Runtime.
+
+This is a real ingestion and governance test against noisy hardware output. It is not presented as a broad benchmark of IBM hardware or as evidence that the software changes physical device noise.
+
+- Backend: `ibm_marrakesh`
+- Job ID: `d8cf0vr8ch0s738uppq0`
+- Shots: `1024`
+- GHZ state population, `0000 + 1111`: `94.24%` (`965/1024` shots)
+- Raw observed non-GHZ population: `5.76%`
+- AEGIS continuity gate: `PASSED`
+- Governance state: `NORMAL`
+- Compact `.QOM` frame: `176 bits`
+- Merkle lineage root generated for the ingested hardware result
+
+Result: the AEGIS control-plane bridge successfully ingested real noisy IBM Quantum counts, converted them into the repository's telemetry schema, evaluated the continuity gate, and generated a compact `.QOM` metadata frame with Merkle lineage.
+
 ## 10-Step Canonical Runtime Loop
 
 1. `INGEST_TELEMETRY`
