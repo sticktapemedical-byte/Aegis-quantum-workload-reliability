@@ -1,13 +1,13 @@
 # AEGIS Site Reliability Control-Plane Simulation Framework
 
-> **Scope in one sentence:** AEGIS is a site reliability control-plane simulation framework for probabilistic telemetry and quantum-inspired hardware-interface research. It is not a physical quantum operating system, not a hardware product, and not a claim of measured real-device quantum performance.
+> **Scope in one sentence:** AEGIS is a site reliability control-plane simulation framework for probabilistic telemetry and quantum-inspired hardware-interface research. It performs classical post-processing, governance, serialization, and lineage over observed data. It is not a physical quantum operating system, not a hardware product, and not a claim that software changes device-level quantum noise.
 
 ## What This Is / What This Is Not
 
 | This repository is | This repository is not |
 |---|---|
 | A Python simulation framework for reliability governance around probabilistic telemetry. | A physical quantum operating system or deployed hardware controller. |
-| A reference implementation of reliability control-plane ideas: observability, gating, fail-closed states, lineage, and reviewer metrics. | A claim that software removes physical quantum noise or bypasses quantum-mechanical limits. |
+| A reference implementation of reliability control-plane ideas: observability, gating, fail-closed states, lineage, and reviewer metrics. | A claim that software removes, suppresses, or physically alters quantum noise. |
 | A reproducible benchmark harness with tests, Monte Carlo runs, Qiskit bridge examples, and JSON artifacts. | A validated production deployment on real quantum hardware. |
 | A noncommercial research/portfolio codebase with commercial licensing reserved separately. | A permission grant for commercial platform integration. |
 
@@ -21,7 +21,7 @@ AEGIS is the reference implementation: a control plane and simulation framework 
 
 Target audience: infrastructure engineers, SREs, distributed systems reviewers, security auditors, simulation engineers, and hardware observability teams.
 
-Scope note: this is a software simulation and control-plane framework. It does not claim to physically modify quantum hardware, erase physical noise, or bypass known limits of quantum mechanics. Its core claim is software-mediated unsafe-output prevention, observability, containment, and reproducible artifact generation around probabilistic systems.
+Scope note: this is a software simulation and control-plane framework. It does not claim to physically modify quantum hardware, erase physical noise, or bypass known limits of quantum mechanics. Its core claim is classical software-mediated unsafe-output prevention, observability, containment, serialization, and reproducible artifact generation around probabilistic telemetry.
 
 ## Architecture Diagram and Sample Output
 
@@ -67,12 +67,12 @@ Observed synthetic cascade variance reductions:
 
 On May 28, 2026, the optional IBM bridge executed a short validation set on real IBM Quantum hardware. The full ledger is stored at [`docs/validation/AEGIS_Master_IBM_Quantum_Validation_Report.md`](docs/validation/AEGIS_Master_IBM_Quantum_Validation_Report.md).
 
-This is a real ingestion and governance test against noisy hardware output. It is not presented as a broad benchmark of IBM hardware or as evidence that the software changes physical device noise.
+This is a real ingestion and governance test against noisy hardware output. AEGIS does classical post-processing of IBM count histograms after execution. It is not presented as a broad benchmark of IBM hardware, not a calibration claim, and not evidence that the software changes physical device noise.
 
 Master ledger highlights:
 
 - Backends used: `ibm_marrakesh`, `ibm_kingston`, `ibm_fez`
-- Total real hardware shots represented: `6,016`
+- Total real hardware shots represented: `6,016` across short validation jobs
 - Initial 4-qubit GHZ run on `ibm_marrakesh`: `94.24%` GHZ population (`965/1024` shots)
 - Same-backend repeatability run on `ibm_marrakesh`: `96.09%` GHZ population (`492/512` shots)
 - Cross-device GHZ runs: `ibm_kingston` at `92.58%`, `ibm_fez` at `83.59%`
@@ -81,6 +81,8 @@ Master ledger highlights:
 - Compact `.QOM` frames generated at `176 bits` with Merkle lineage roots
 
 Result: the AEGIS control-plane bridge successfully ingested real noisy IBM Quantum counts, converted them into the repository's telemetry schema, evaluated continuity and commanded-setpoint gates, and generated compact `.QOM` metadata frames with Merkle lineage.
+
+Statistical rigor note: these are early, short-shot validation runs intended to prove end-to-end integration. They are not sufficient for device-level statistical claims. Stronger future studies should use more repetitions per condition, higher shot counts, confidence intervals, and controlled backend calibration snapshots.
 
 ## 10-Step Canonical Runtime Loop
 
@@ -226,7 +228,7 @@ Grounded checks include:
 
 ## `.QOM` Compact Payload Layout
 
-The compact `.QOM` payload is generated as a real 22-byte big-endian binary struct in `aegis_kernel.py`, not as a JSON placeholder:
+The compact `.QOM` payload is generated as a real 22-byte big-endian binary struct in `aegis_kernel.py`, not as a JSON placeholder. The implementation is `AegisContinuityKernel.emit_compact_qom_payload(...)`:
 
 `struct.pack(">IHHHHHQ", phase_u32, coherence_u16, lifecycle_u16, trust_u16, backaction_u16, governance_u16, opte_u64)`
 

@@ -4,9 +4,9 @@ Generated from real IBM Quantum Runtime jobs executed on May 28, 2026.
 
 ## Scope Boundary
 
-These results summarize real IBM Quantum backend jobs whose raw hardware counts were ingested by the AEGIS site reliability control-plane simulation framework. They demonstrate hardware data ingestion, telemetry mapping, continuity/setpoint governance, compact 176-bit `.QOM` frame generation, and Merkle lineage logging.
+These results summarize real IBM Quantum backend jobs whose raw hardware counts were ingested by the AEGIS site reliability control-plane simulation framework. AEGIS performs classical post-processing, telemetry mapping, continuity/setpoint governance, compact 176-bit `.QOM` frame generation, and Merkle lineage logging over returned count histograms.
 
-They are not presented as a broad benchmark of IBM hardware and do not claim that AEGIS changes physical device noise.
+They are not presented as a broad benchmark of IBM hardware, a device calibration result, or evidence that AEGIS changes physical quantum noise. The hardware executes the circuits; AEGIS governs and records the returned data path.
 
 ## Executive Rollup
 
@@ -18,6 +18,18 @@ They are not presented as a broad benchmark of IBM hardware and do not claim tha
 | Multi-backend GHZ devices tested | 3 |
 | Corrected setpoint validations | 10 / 10 |
 | Compact `.QOM` frame width | 176 bits |
+
+## Statistical Rigor Note
+
+This is an early end-to-end validation set. The 9 hardware jobs prove that the bridge can execute, ingest, score, serialize, and ledger real backend results. They do not establish device-level performance claims.
+
+Most individual runs use 128 to 512 shots, with one 1024-shot GHZ run and two 1280-shot phase-sweep jobs. Stronger future studies should add:
+
+- more repeated runs per backend and condition,
+- higher shot counts where account limits permit,
+- confidence intervals for GHZ population and setpoint error,
+- contemporaneous backend calibration snapshots,
+- separated analysis for readout error, gate error, queue latency, and control-plane decisions.
 
 ## Master Validation Ledger
 
@@ -49,6 +61,7 @@ They are not presented as a broad benchmark of IBM hardware and do not claim tha
 4. AEGIS mapped counts into telemetry lanes with phase estimates, environment pressure, latency, and trust inputs.
 5. The kernel executed projection, wrapped-delta phase unwrapping, quorum/anchor checks, governance bitmask evaluation, compact `.QOM` emission, and Merkle commit.
 6. Continuous trajectory tests and commanded setpoint tests are intentionally separated: continuity gates are strict trajectory-corridor checks, while setpoint validation checks whether declared calibration targets were matched.
+7. The compact `.QOM` payload is implemented in `AegisContinuityKernel.emit_compact_qom_payload(...)` using `struct.pack(">IHHHHHQ", ...)`, producing exactly 22 bytes / 176 bits. `tests/test_kernel.py::test_qom_compact_payload_is_exact_176_bit_struct` unpacks the emitted bytes and validates the field boundaries.
 
 ## Local Artifacts
 
