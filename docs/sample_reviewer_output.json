@@ -1,0 +1,22 @@
+{
+  "mode": "reviewer",
+  "description": "Representative reviewer-mode fields. Values are produced by python aegis_os.py --reviewer-mode.",
+  "metrics": {
+    "steps": 150,
+    "continuity_yield": 0.96,
+    "integrity_preserved_yield": 0.04,
+    "uop_opportunities": 100,
+    "uop_efficiency": 1.0,
+    "usr": 0.0,
+    "eta_byzantine": 0.95225,
+    "eta_taylor": 0.91208,
+    "eta_riemann": 0.999,
+    "qom_payload_bits": 176,
+    "rmse_phase_skew_rad": 0.016477,
+    "packet_jitter_ns": 169.690925,
+    "shannon_entropy_bound_bits": 3.543849,
+    "data_compression_ratio": 14.2,
+    "packet_latency_bound_ms": 3.0
+  },
+  "scope_note": "Simulation output, not a physical quantum hardware measurement."
+}

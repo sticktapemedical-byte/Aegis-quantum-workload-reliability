@@ -1,14 +1,35 @@
-# Aegis Quantum OS Monolith
+# AEGIS Q-SRE Control Plane
+
+> **Scope in one sentence:** AEGIS is a control-plane simulation framework for Quantum Site Reliability Engineering (Q-SRE) research. It is not a physical quantum operating system, not a hardware product, and not a claim of measured real-device quantum performance.
+
+## What This Is / What This Is Not
+
+| This repository is | This repository is not |
+|---|---|
+| A Python simulation framework for reliability governance around probabilistic telemetry. | A physical quantum operating system or deployed hardware controller. |
+| A reference implementation of Q-SRE control-plane ideas: observability, gating, fail-closed states, lineage, and reviewer metrics. | A claim that software removes physical quantum noise or bypasses quantum-mechanical limits. |
+| A reproducible benchmark harness with tests, Monte Carlo runs, Qiskit bridge examples, and JSON artifacts. | A validated production deployment on real quantum hardware. |
+| A noncommercial research/portfolio codebase with commercial licensing reserved separately. | A permission grant for commercial platform integration. |
+
+For technical review, read the claims as **simulation claims unless a section explicitly says otherwise**. See `VALIDATION.md`, `ASSUMPTIONS.md`, and `ROADMAP.md` for grounding boundaries.
 
 ## Executive Summary
 
-Aegis Quantum OS Monolith introduces Quantum Site Reliability Engineering (Q-SRE) as a proposed engineering discipline for operating high-entropy probabilistic systems with classical reliability controls.
+AEGIS introduces Quantum Site Reliability Engineering (Q-SRE) as a proposed engineering discipline for operating high-entropy probabilistic systems with classical reliability controls.
 
 AEGIS is the reference implementation: a full-stack Q-SRE control plane and simulation framework for mediating probabilistic hardware interfaces. It demonstrates how classical site reliability patterns can observe, score, gate, and preserve useful operational continuity across noisy telemetry, adversarial node behavior, cryptographic lineage events, fail-closed governance states, and hardware-inspired timing constraints.
 
 Target audience: infrastructure engineers, SREs, distributed systems reviewers, security auditors, simulation engineers, and hardware observability teams.
 
 Scope note: this is a software simulation and control-plane framework. It does not claim to physically modify quantum hardware, erase physical noise, or bypass known limits of quantum mechanics. Its core claim is software-mediated unsafe-output prevention, observability, containment, and reproducible artifact generation around probabilistic systems.
+
+## Architecture Diagram and Sample Output
+
+![AEGIS Q-SRE Control Plane Architecture](docs/architecture.svg)
+
+Example reviewer-mode output fields are included at `docs/sample_reviewer_output.json`. Generate fresh local output with:
+
+`python aegis_os.py --reviewer-mode --output aegis_os_report.json`
 
 ## License And Commercial Use
 
@@ -40,7 +61,7 @@ Observed cascade variance reductions:
 
 - Weighted Byzantine quorum isolation: raw poisoning mean error is reduced from approximately `0.3940` to `0.0188`.
 - Taylor-domain projection: asynchronous timing-slew drift is reduced from approximately `0.0633` to `0.0055`.
-- Riemann manifold phase unwrapping: wrapped phase-cut acceleration variance is reduced from approximately `0.2354` to `8.09e-08`.
+- Wrapped-delta phase unwrapping: wrapped phase-cut acceleration variance is reduced from approximately `0.2354` to `8.09e-08` in synthetic trials.
 
 ## 10-Step Canonical Runtime Loop
 
@@ -67,7 +88,7 @@ Models weighted quorum voting, node quarantine, rolling anchor verification, Mer
 
 ### Acceleration Tier
 
-Models math offload for Taylor-domain kinetic phase normalization, Riemann manifold phase unwrapping, weighted vector fusion, Monte Carlo cascade efficiency estimation, and reviewer-mode telemetry metrics.
+Models math offload for Taylor-domain kinetic phase normalization, wrapped-delta phase unwrapping, weighted vector fusion, Monte Carlo cascade efficiency estimation, and reviewer-mode telemetry metrics.
 
 ### Register Abstraction
 
@@ -99,7 +120,7 @@ These rules define how the simulated kernel handles edge cases where timing, mea
 
 3. **Winding-number extraction through `RECOVERY_VALIDATE`**
 
-   The kernel treats an angular update as a possible lost Riemann sheet when:
+   The kernel treats an angular update as a possible lost phase-unwrapping branch when:
 
    `|Delta P| > omega_max * Delta_t_epoch + epsilon`
 
@@ -138,6 +159,10 @@ Run reviewer-mode terminal output:
 
 `python aegis_os.py --reviewer-mode`
 
+Run tests and reviewer-mode output in one command:
+
+`python -m pytest tests && python aegis_os.py --reviewer-mode`
+
 Equivalent reviewer-mode toggle:
 
 `python aegis_os.py --mode reviewer`
@@ -172,15 +197,20 @@ If Qiskit is not installed, install the optional integration packages in a separ
 
 ## Repository File Map
 
+- `docs/architecture.svg`: simplified architecture diagram for reviewers.
+- `docs/sample_reviewer_output.json`: compact example of reviewer-mode output fields.
 - `.github/FUNDING.yml`: external support link configuration.
 - `examples/qiskit_bridge.py`: optional Qiskit Aer bridge that maps noisy GHZ circuit counts into AEGIS telemetry inputs.
-- `tests/test_kernel.py`: pytest-compatible regression suite for crypto sealing, holdover aborts, and Riemann phase continuity.
+- `tests/test_kernel.py`: pytest-compatible regression suite for crypto sealing, holdover aborts, and wrapped-delta phase continuity.
 - `requirements-dev.txt`: local test-runner dependency file.
 - `requirements-qiskit.txt`: optional Qiskit bridge dependency file.
 - `aegis_kernel.py`: core control-plane logic, mathematical registers, governance states, Monte Carlo metrics, `.QOM` frames, Merkle lineage, and multiplicative trust matrices.
 - `aegis_os.py`: terminal runner managing deterministic execution, report output, and reviewer-mode telemetry switches.
 - `aegis_monitor.py`: loopback HTTP server orchestrating the live diagnostic dashboard, stressor controls, exports, and health endpoints.
 - `README.md`: technical specification handbook and deployment guide.
+- `ROADMAP.md`: implemented vs. simulated vs. future hardware target vs. speculative research boundaries.
+- `VALIDATION.md`: measured simulation claims and non-measured boundaries.
+- `ASSUMPTIONS.md`: explicit simulation assumptions.
 - `LICENSE`: PolyForm Noncommercial License 1.0.0.
 - `COMMERCIAL_LICENSE.md`: commercial-use notice and contact path.
 
@@ -190,7 +220,7 @@ The `tests/` suite verifies hard safety invariants:
 
 - Crypto invalidation: an induced key/signature slip sets `CRYPTO_SEAL`, drops the continuity gate, and closes the hardware register gate.
 - Holdover breach: an elapsed tracking window beyond the safe phase-error ceiling triggers `CIRCUIT_ABORT` and marks `HOLDOVER_BREACH`.
-- Riemann unwrap continuity: aggressive `[-pi, +pi)` branch-cut crossings remain continuous after wrapped-delta unwrapping, with acceleration variance below `8.09e-08`.
+- Phase unwrap continuity: aggressive `[-pi, +pi)` branch-cut crossings remain continuous after wrapped-delta unwrapping, with acceleration variance below `8.09e-08`.
 
 The tests use plain Python assertions and are compatible with pytest:
 
@@ -236,7 +266,7 @@ Several AEGIS terms are project-specific names for established engineering patte
 
 - **Meaning-based compression:** modeled as lossy high-utility telemetry filtering, where low-value floating-point tails and repeated sensor noise are truncated before archival. This follows common industrial telemetry compression and lossy signal-compression practice.
 - **Weighted Byzantine quorum isolation:** grounded in Byzantine fault-tolerant distributed systems. AEGIS keeps the `f < n/3` mindset, requires a minimum physical node count, and weights candidate vectors by trust before medoid/outlier filtering.
-- **Riemann manifold phase unwrapping:** implemented as wrapped-delta phase unwrapping: `wrap_pi(delta) = ((delta + pi) mod 2pi) - pi`, accumulated into a continuous track. This is aligned with PLL-style phase tracking and Itoh-style phase-unwrapping logic.
+- **Wrapped-delta phase unwrapping:** implemented as `wrap_pi(delta) = ((delta + pi) mod 2pi) - pi`, accumulated into a continuous track. This is aligned with PLL-style phase tracking and Itoh-style phase-unwrapping logic.
 - **Unsafe-output prevention efficiency:** a reliability metric over unsafe-output opportunities, not a claim that software removes physical noise. It measures how often the control plane prevents unsafe data from reaching the output or ledger.
 
 ## JSON Export Layout
