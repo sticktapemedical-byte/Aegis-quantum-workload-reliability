@@ -39,6 +39,7 @@ def run_long_form_phase_sweep(
     shots: int = 256,
     seed: int = 2026,
     channel: str = "ibm_quantum_platform",
+    reset_per_phase: bool = False,
 ) -> dict[str, object]:
     _, sampler_cls, generate_preset_pass_manager = require_runtime()
     _, backend = select_real_backend(channel=channel, backend_name=backend_name)
@@ -60,6 +61,8 @@ def run_long_form_phase_sweep(
     kernel = AegisContinuityKernel(seed=seed)
     phase_records = []
     for index, phase in enumerate(phases):
+        if reset_per_phase:
+            kernel = AegisContinuityKernel(seed=seed + index)
         counts = extract_pub_counts(result[index])
         telemetry, phase_metrics = telemetry_from_single_qubit_counts(
             counts,
@@ -67,13 +70,22 @@ def run_long_form_phase_sweep(
             latency_seconds=elapsed / len(phases),
             seed=seed + index,
         )
-        cycle = kernel.execute_cycle(telemetry, scenario=f"ibm_long_form_phase_{index}_{backend.name}")
+        expected_one_population = math.sin(phase / 2.0) ** 2
+        observed_one_population = phase_metrics["one_population"]
+        setpoint_abs_error = abs(observed_one_population - expected_one_population)
+        mode_label = "setpoint" if reset_per_phase else "continuity"
+        cycle = kernel.execute_cycle(telemetry, scenario=f"ibm_long_form_{mode_label}_phase_{index}_{backend.name}")
         phase_records.append(
             {
                 "index": index,
                 "requested_phase_radians": phase,
+                "anchor_mode": "reset_per_phase_commanded_setpoint" if reset_per_phase else "continuous_track",
                 "counts": counts,
                 "total_counts": sum(int(value) for value in counts.values()),
+                "expected_one_population": expected_one_population,
+                "observed_one_population": observed_one_population,
+                "setpoint_abs_error": setpoint_abs_error,
+                "setpoint_validation_passed": setpoint_abs_error <= 0.12,
                 **phase_metrics,
                 "q_conf": cycle.q_conf,
                 "trust_index": cycle.trust_index,
@@ -84,8 +96,10 @@ def run_long_form_phase_sweep(
             }
         )
     passed = sum(1 for record in phase_records if record["continuity_gate_passed"])
+    setpoint_passed = sum(1 for record in phase_records if record["setpoint_validation_passed"])
     mean_q_conf = sum(float(record["q_conf"]) for record in phase_records) / len(phase_records)
     mean_phase_balance_error = sum(float(record["phase_balance_error"]) for record in phase_records) / len(phase_records)
+    mean_setpoint_abs_error = sum(float(record["setpoint_abs_error"]) for record in phase_records) / len(phase_records)
     return {
         "source": "ibm_real_hardware_long_form_single_qubit_phase_sweep",
         "backend": backend.name,
@@ -93,9 +107,13 @@ def run_long_form_phase_sweep(
         "circuits": len(phases),
         "shots_per_circuit": shots,
         "total_shots": shots * len(phases),
+        "anchor_mode": "reset_per_phase_commanded_setpoint" if reset_per_phase else "continuous_track",
         "round_trip_seconds": elapsed,
         "mean_q_conf": mean_q_conf,
         "mean_phase_balance_error": mean_phase_balance_error,
+        "mean_setpoint_abs_error": mean_setpoint_abs_error,
+        "setpoint_validations_passed": setpoint_passed,
+        "setpoint_validations_total": len(phase_records),
         "continuity_gates_passed": passed,
         "continuity_gates_total": len(phase_records),
         "final_qom_compact_payload_bits": 176,
@@ -111,6 +129,11 @@ def main() -> None:
     parser.add_argument("--channel", default="ibm_quantum_platform")
     parser.add_argument("--shots", type=int, default=256)
     parser.add_argument("--seed", type=int, default=2026)
+    parser.add_argument(
+        "--reset-per-phase",
+        action="store_true",
+        help="Treat each phase as an intentional calibration setpoint with a fresh anchor window.",
+    )
     parser.add_argument("--output", type=Path, default=Path("ibm_long_form_marrakesh.json"))
     args = parser.parse_args()
     payload = run_long_form_phase_sweep(
@@ -118,6 +141,7 @@ def main() -> None:
         shots=args.shots,
         seed=args.seed,
         channel=args.channel,
+        reset_per_phase=args.reset_per_phase,
     )
     args.output.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     print(json.dumps(payload, indent=2))
