@@ -63,23 +63,24 @@ Observed synthetic cascade variance reductions:
 - Taylor-domain projection: asynchronous timing-slew drift is reduced from approximately `0.0633` to `0.0055`.
 - Wrapped-delta phase unwrapping: wrapped phase-cut acceleration variance is reduced from approximately `0.2354` to `8.09e-08` in synthetic trials.
 
-## Real Hardware Validation: IBM Quantum `ibm_marrakesh`
+## Real Hardware Validation: IBM Quantum Runtime
 
-On May 28, 2026, `examples/ibm_bridge.py` executed a 4-qubit GHZ circuit on IBM Quantum hardware through IBM Quantum Runtime.
+On May 28, 2026, the optional IBM bridge executed a short validation set on real IBM Quantum hardware. The full ledger is stored at [`docs/validation/AEGIS_Master_IBM_Quantum_Validation_Report.md`](docs/validation/AEGIS_Master_IBM_Quantum_Validation_Report.md).
 
 This is a real ingestion and governance test against noisy hardware output. It is not presented as a broad benchmark of IBM hardware or as evidence that the software changes physical device noise.
 
-- Backend: `ibm_marrakesh`
-- Job ID: `d8cf0vr8ch0s738uppq0`
-- Shots: `1024`
-- GHZ state population, `0000 + 1111`: `94.24%` (`965/1024` shots)
-- Raw observed non-GHZ population: `5.76%`
-- AEGIS continuity gate: `PASSED`
-- Governance state: `NORMAL`
-- Compact `.QOM` frame: `176 bits`
-- Merkle lineage root generated for the ingested hardware result
+Master ledger highlights:
 
-Result: the AEGIS control-plane bridge successfully ingested real noisy IBM Quantum counts, converted them into the repository's telemetry schema, evaluated the continuity gate, and generated a compact `.QOM` metadata frame with Merkle lineage.
+- Backends used: `ibm_marrakesh`, `ibm_kingston`, `ibm_fez`
+- Total real hardware shots represented: `6,016`
+- Initial 4-qubit GHZ run on `ibm_marrakesh`: `94.24%` GHZ population (`965/1024` shots)
+- Same-backend repeatability run on `ibm_marrakesh`: `96.09%` GHZ population (`492/512` shots)
+- Cross-device GHZ runs: `ibm_kingston` at `92.58%`, `ibm_fez` at `83.59%`
+- Fast single-qubit coherence/readout pass: `q_conf=0.96972`, continuity passed, `NORMAL`
+- Corrected commanded setpoint sweeps: `10/10` setpoint validations passed across 128-shot and 256-shot sweeps
+- Compact `.QOM` frames generated at `176 bits` with Merkle lineage roots
+
+Result: the AEGIS control-plane bridge successfully ingested real noisy IBM Quantum counts, converted them into the repository's telemetry schema, evaluated continuity and commanded-setpoint gates, and generated compact `.QOM` metadata frames with Merkle lineage.
 
 ## 10-Step Canonical Runtime Loop
 

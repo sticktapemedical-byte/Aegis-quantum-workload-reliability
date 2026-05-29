@@ -15,6 +15,7 @@ Downloads/
 
 *.log
 *.tmp
+*.json
 
 aegis_os_report.json
 aegis_os_reviewer_test.json
