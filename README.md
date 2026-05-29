@@ -23,6 +23,31 @@ Target audience: infrastructure engineers, SREs, distributed systems reviewers, 
 
 Scope note: this is a software simulation and control-plane framework. It does not claim to physically modify quantum hardware, erase physical noise, or bypass known limits of quantum mechanics. Its core claim is classical software-mediated unsafe-output prevention, observability, containment, serialization, and reproducible artifact generation around probabilistic telemetry.
 
+## Terminology
+
+**Q-SRE** is a term coined for this project. It means applying classical Site Reliability Engineering patterns, such as observability, governance, fault isolation, continuity tracking, fail-closed behavior, and lineage, to noisy probabilistic systems. Those systems may include simulator outputs, real quantum processor count histograms, or other high-entropy telemetry streams.
+
+**`.QOM`** means **Quality Orchestration Metadata** in this repository. A `.QOM` frame is a compact 176-bit binary metadata structure carrying phase, confidence/coherence, lifecycle, trust, risk/backaction proxy, governance, and policy-context metadata. It is not a network TLD and not a claim of quantum transport.
+
+For technical sections, the project can also be read as a **Probabilistic SRE Control Plane** or **Aegis Continuity Kernel**.
+
+## Current Execution Model And Limitations
+
+AEGIS currently functions as a **classical post-processing governance layer**.
+
+1. IBM Quantum Runtime executes a circuit on hardware.
+2. Raw count histograms are returned after job completion.
+3. AEGIS ingests those results, performs continuity tracking, wrapped-delta phase unwrapping, trust evaluation, governance decisions, `.QOM` serialization, and Merkle logging.
+
+This is not real-time control during quantum execution. AEGIS does not influence a quantum circuit while it is running on the QPU.
+
+Near-term roadmap:
+
+- Use Qiskit Runtime Sessions to keep quantum/classical resources warm across multiple short jobs.
+- Process each returned batch immediately through AEGIS instead of waiting for one monolithic experiment.
+- Use AEGIS governance outputs to select the next submitted circuit batch in a hybrid classical-quantum loop.
+- Explore IBM dynamic circuits for hardware-supported mid-circuit measurement/feed-forward where applicable, with AEGIS still governing the returned data stream.
+
 ## Architecture Diagram and Sample Output
 
 ![AEGIS Site Reliability Control Plane Architecture](docs/architecture.svg)
@@ -287,6 +312,16 @@ Local fake-backend smoke test:
 Real hardware, when credentials are configured locally:
 
 `python examples/ibm_bridge.py --real --shots 1024 --output ibm_bridge_result.json`
+
+Session-style batch loop, local fake backend smoke test:
+
+`python examples/session_batch_loop.py --batches 3 --shots 128 --output ibm_session_batch_loop_fake_smoke.json`
+
+Session-style batch loop, real hardware:
+
+`python examples/session_batch_loop.py --real --backend ibm_marrakesh --batches 3 --shots 256 --output ibm_session_batch_loop.json`
+
+The session-style loop is the current near-real-time bridge pattern: it does not control the QPU during a circuit, but it keeps runtime resources warm and runs AEGIS immediately after each returned batch.
 
 ## Algorithmic Grounding
 

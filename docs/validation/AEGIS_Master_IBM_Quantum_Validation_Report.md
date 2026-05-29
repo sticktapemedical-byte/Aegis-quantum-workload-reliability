@@ -8,6 +8,16 @@ These results summarize real IBM Quantum backend jobs whose raw hardware counts 
 
 They are not presented as a broad benchmark of IBM hardware, a device calibration result, or evidence that AEGIS changes physical quantum noise. The hardware executes the circuits; AEGIS governs and records the returned data path.
 
+## Current Execution Model
+
+AEGIS currently runs after each IBM Quantum job or batch returns. IBM Quantum Runtime executes the circuit, then AEGIS ingests the returned count histograms and performs classical post-processing, governance, `.QOM` serialization, and Merkle lineage.
+
+This is not real-time QPU control. The near-term bridge path is session-based batching: keep IBM Runtime resources warm, submit short circuit batches, and run AEGIS immediately after each batch result returns.
+
+Implemented session-batch example: `examples/session_batch_loop.py`.
+
+Local smoke result: `3` fake-backend batches, `128` shots per batch, mean GHZ population `95.31%`, mean `q_conf=0.96148`, and `3/3` continuity gates passed. This validates the batch-loop integration path without spending additional real-hardware quota.
+
 ## Executive Rollup
 
 | Category | Value |
