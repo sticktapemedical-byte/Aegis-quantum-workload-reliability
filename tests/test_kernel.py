@@ -3,6 +3,7 @@ from __future__ import annotations
 import math
 import random
 import statistics
+import struct
 import sys
 from pathlib import Path
 
@@ -14,6 +15,8 @@ from aegis_kernel import (  # noqa: E402
     AegisContinuityKernel,
     GovernanceState,
     KernelConfig,
+    QOM_COMPACT_PAYLOAD_BITS,
+    QOM_COMPACT_STRUCT_FORMAT,
     build_nominal_telemetry,
     normalize_vector,
     vector_distance,
@@ -124,3 +127,27 @@ def test_unsafe_output_prevention_grounded() -> None:
     efficiency = prevented / max(1, opportunities)
     assert opportunities > 0
     assert efficiency > 0.85
+
+
+def test_qom_compact_payload_is_exact_176_bit_struct() -> None:
+    """The compact .QOM payload is a real 22-byte big-endian struct, not a JSON placeholder."""
+    kernel = AegisContinuityKernel(seed=123)
+    rng = random.Random(123)
+    telemetry = build_nominal_telemetry(kernel.config.node_count, rng, "normal")
+    result = kernel.execute_cycle(telemetry, scenario="qom_layout_check")
+    payload = bytes.fromhex(result.qom_compact_payload_hex)
+
+    assert result.qom_compact_payload_bits == 176
+    assert QOM_COMPACT_PAYLOAD_BITS == 176
+    assert len(payload) == 22
+
+    unpacked = struct.unpack(QOM_COMPACT_STRUCT_FORMAT, payload)
+    phase_u32, coherence_u16, lifecycle_u16, trust_u16, backaction_u16, governance_u16, opte_u64 = unpacked
+
+    assert 0 <= phase_u32 <= 0xFFFFFFFF
+    assert 0 <= coherence_u16 <= 0xFFFF
+    assert lifecycle_u16 == result.epoch
+    assert 0 <= trust_u16 <= 0xFFFF
+    assert 0 <= backaction_u16 <= 0xFFFF
+    assert governance_u16 == result.governance_mask
+    assert opte_u64 == int(result.opte_policy_context_hash[:16], 16)

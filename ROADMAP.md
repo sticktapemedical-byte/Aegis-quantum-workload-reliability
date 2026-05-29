@@ -4,7 +4,7 @@ This roadmap separates implemented software from simulation models, future hardw
 
 ## Implemented Now
 
-- Standard-library Python Q-SRE control-plane simulation.
+- Standard-library Python site reliability control-plane simulation.
 - Deterministic scenario runner in `aegis_os.py`.
 - Core kernel logic in `aegis_kernel.py`.
 - Local HTTP monitor in `aegis_monitor.py`.
@@ -36,11 +36,11 @@ This roadmap separates implemented software from simulation models, future hardw
 
 ## Speculative Research
 
-- Q-SRE as a broader reliability discipline for probabilistic hardware interfaces.
+- Site reliability engineering patterns for probabilistic hardware interfaces.
 - Production-grade `.QOM` middleware semantics.
 - Long-distance mesh telemetry orchestration.
 - Hardware-aware economic scheduling models.
 
 ## Naming Guidance
 
-For technical review, use **Q-SRE Control Plane** or **Q-SRE Simulation Framework**. Avoid presenting the project as a physical “Quantum OS” unless explicitly discussing long-term vision or historical branding.
+For technical review, use **site reliability control plane** or **simulation framework for probabilistic telemetry**. Avoid presenting the project as a physical “Quantum OS” unless explicitly discussing long-term vision or historical branding.

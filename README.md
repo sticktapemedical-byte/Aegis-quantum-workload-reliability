@@ -1,23 +1,23 @@
-# AEGIS Q-SRE Control Plane
+# AEGIS Site Reliability Control-Plane Simulation Framework
 
-> **Scope in one sentence:** AEGIS is a control-plane simulation framework for Quantum Site Reliability Engineering (Q-SRE) research. It is not a physical quantum operating system, not a hardware product, and not a claim of measured real-device quantum performance.
+> **Scope in one sentence:** AEGIS is a site reliability control-plane simulation framework for probabilistic telemetry and quantum-inspired hardware-interface research. It is not a physical quantum operating system, not a hardware product, and not a claim of measured real-device quantum performance.
 
 ## What This Is / What This Is Not
 
 | This repository is | This repository is not |
 |---|---|
 | A Python simulation framework for reliability governance around probabilistic telemetry. | A physical quantum operating system or deployed hardware controller. |
-| A reference implementation of Q-SRE control-plane ideas: observability, gating, fail-closed states, lineage, and reviewer metrics. | A claim that software removes physical quantum noise or bypasses quantum-mechanical limits. |
+| A reference implementation of reliability control-plane ideas: observability, gating, fail-closed states, lineage, and reviewer metrics. | A claim that software removes physical quantum noise or bypasses quantum-mechanical limits. |
 | A reproducible benchmark harness with tests, Monte Carlo runs, Qiskit bridge examples, and JSON artifacts. | A validated production deployment on real quantum hardware. |
 | A noncommercial research/portfolio codebase with commercial licensing reserved separately. | A permission grant for commercial platform integration. |
 
-For technical review, read the claims as **simulation claims unless a section explicitly says otherwise**. See `VALIDATION.md`, `ASSUMPTIONS.md`, and `ROADMAP.md` for grounding boundaries.
+For technical review, read the claims as **simulation claims unless a section explicitly says otherwise**. See `VALIDATION.md`, `ASSUMPTIONS.md`, `ROADMAP.md`, and `docs/runtime_boundaries.md` for grounding boundaries.
 
 ## Executive Summary
 
-AEGIS introduces Quantum Site Reliability Engineering (Q-SRE) as a proposed engineering discipline for operating high-entropy probabilistic systems with classical reliability controls.
+AEGIS explores a site reliability engineering approach for operating high-entropy probabilistic systems with classical reliability controls. The project uses “Q-SRE” as shorthand for that research direction, but the implemented artifact is a simulation framework.
 
-AEGIS is the reference implementation: a full-stack Q-SRE control plane and simulation framework for mediating probabilistic hardware interfaces. It demonstrates how classical site reliability patterns can observe, score, gate, and preserve useful operational continuity across noisy telemetry, adversarial node behavior, cryptographic lineage events, fail-closed governance states, and hardware-inspired timing constraints.
+AEGIS is the reference implementation: a control plane and simulation framework for mediating probabilistic hardware interfaces. It demonstrates how classical site reliability patterns can observe, score, gate, and preserve useful operational continuity across noisy telemetry, adversarial node behavior, cryptographic lineage events, fail-closed governance states, and hardware-inspired timing constraints.
 
 Target audience: infrastructure engineers, SREs, distributed systems reviewers, security auditors, simulation engineers, and hardware observability teams.
 
@@ -25,7 +25,7 @@ Scope note: this is a software simulation and control-plane framework. It does n
 
 ## Architecture Diagram and Sample Output
 
-![AEGIS Q-SRE Control Plane Architecture](docs/architecture.svg)
+![AEGIS Site Reliability Control Plane Architecture](docs/architecture.svg)
 
 Example reviewer-mode output fields are included at `docs/sample_reviewer_output.json`. Generate fresh local output with:
 
@@ -43,21 +43,21 @@ See `COMMERCIAL_LICENSE.md` for the commercial-use notice.
 
 If you want to back the development of this open-source control plane simulation, quantum error mitigation tuning metrics, or low-level FPGA register targets, consider supporting the research runway:
 
-- **Support via Buy Me a Coffee:** [Support Aegis Q-SRE Lab on Buy Me a Coffee](https://buymeacoffee.com/aegisqsrelab)
+- **Support via Buy Me a Coffee:** [Support Aegis Reliability Lab on Buy Me a Coffee](https://buymeacoffee.com/aegisqsrelab)
 
 ## Core Technical Metrics
 
-Current public simulation metrics:
+Current public simulation metrics from the repository's synthetic benchmark suite:
 
 - Unsafe-Output Prevention Efficiency, `UOP_eff`: `99.63%`
 - Unnecessary Shutdown Rate, `USR`: `0.00%`
-- Meaning-Based Data Compression Ratio: `14.2x`
+- Telemetry compression model ratio: `14.2x`
 - Compact `.QOM` metadata frame: `176 bits`
 - Public v1 UOP target: `99.49%`
 - Systemic stretch UOP target: `99.90%`
 - Theoretical cascade boundary target: `99.925%`
 
-Observed cascade variance reductions:
+Observed synthetic cascade variance reductions:
 
 - Weighted Byzantine quorum isolation: raw poisoning mean error is reduced from approximately `0.3940` to `0.0188`.
 - Taylor-domain projection: asynchronous timing-slew drift is reduced from approximately `0.0633` to `0.0055`.
@@ -104,43 +104,7 @@ Models low-level hardware-style diagnostics:
 
 ## Runtime Failure Boundary Rules
 
-These rules define how the simulated kernel handles edge cases where timing, measurement, branch lineage, or physical resource limits become unsafe. They are documented as system design constraints for review and implementation testing.
-
-1. **Low-order adaptive fallback when `tau_calc > Delta_t_epoch`**
-
-   If the full second-order phase projection cannot complete within the epoch budget, the kernel drops the acceleration term and falls back to a linear velocity projection. The uncertainty radius of the active continuity corridor is widened to reflect the lower-order estimate. If calculation latency exceeds `Delta_t_epoch * n_max`, the kernel triggers `CIRCUIT_ABORT` rather than emitting a stale or hallucinated track.
-
-2. **Backaction contamination correction when `[H, L_j] != 0`**
-
-   The runtime separates dissipation into environmental and observer-induced components:
-
-   `D_total = D_env + D_obs`
-
-   When the Hamiltonian and measurement operator do not commute, the observed error is corrected by a non-commutation penalty, modeled as `alpha * ||[H, L_j]||`. Nodes under intense measurement stress are marked `BACKACTION_CONTAMINATED` instead of automatically marked `FAULTY`, preserving trust-state observability between physical sensor faults and observer-induced disturbance.
-
-3. **Winding-number extraction through `RECOVERY_VALIDATE`**
-
-   The kernel treats an angular update as a possible lost phase-unwrapping branch when:
-
-   `|Delta P| > omega_max * Delta_t_epoch + epsilon`
-
-   or when competing branch likelihoods collide. Phase commits are frozen, and `RECOVERY_VALIDATE` resolves the valid winding number against the newest anchor reference:
-
-   `N_valid = argmin ||P_tilde_N - A_anchor||`
-
-   Active data paths reopen only after the rolling anchor window is re-synchronized.
-
-4. **Deterministic resolution of `ORPHANED_FORENSIC_BRANCH`**
-
-   During a healed network partition or branch collision, competing lineage branches are scored with a canonical branch score `S_b` that can incorporate anchor agreement, trust channels, continuity health, epoch recency, and cryptographic validity. The winning branch remains active. The losing branch is sealed as an orphaned forensic branch with a permanent tombstone hash:
-
-   `H(orphanBranchRoot || reason || resolutionEpoch)`
-
-   Live subkeys for the losing branch are erased while the tombstone preserves non-repudiation proof.
-
-5. **Staged cryptographic sealing with `CRYPTO_SEAL_MIN`**
-
-   When cryptographic sealing is required under thermal pressure, the kernel first enters a minimum sealing state: freeze external I/O, lock enclaves read-only, and ratchet forward once. Heavy cache shredding is deferred until thermal headroom is available. This preserves lineage integrity without worsening a simulated cryogenic or thermal overload condition.
+The detailed failure-boundary notes were moved to `docs/runtime_boundaries.md` to keep the README focused. In short, the simulator models low-order fallback, phase-branch recovery, staged cryptographic sealing, fail-closed governance, and forensic branch tombstones.
 
 ## Quick Start
 
@@ -198,6 +162,7 @@ If Qiskit is not installed, install the optional integration packages in a separ
 ## Repository File Map
 
 - `docs/architecture.svg`: simplified architecture diagram for reviewers.
+- `docs/runtime_boundaries.md`: detailed simulated failure-boundary rules.
 - `docs/sample_reviewer_output.json`: compact example of reviewer-mode output fields.
 - `.github/FUNDING.yml`: external support link configuration.
 - `examples/qiskit_bridge.py`: optional Qiskit Aer bridge that maps noisy GHZ circuit counts into AEGIS telemetry inputs.
@@ -228,7 +193,7 @@ The tests use plain Python assertions and are compatible with pytest:
 
 ## Validation and Grounding
 
-This project is a simulation framework for Q-SRE governance behavior, not a claim of measured physical quantum hardware performance. See `VALIDATION.md` and `ASSUMPTIONS.md` for the current boundary between measured simulation results, theoretical projections, and non-modeled hardware behavior.
+This project is a simulation framework for reliability-governance behavior around probabilistic telemetry, not a claim of measured physical quantum hardware performance. See `VALIDATION.md` and `ASSUMPTIONS.md` for the current boundary between measured simulation results, theoretical projections, and non-modeled hardware behavior.
 
 Grounded checks include:
 
@@ -237,6 +202,26 @@ Grounded checks include:
 - unsafe-output prevention across deterministic stress scenarios
 - Merkle/HMAC ledger integrity checks
 - `.QOM` compact payload bit-width validation
+
+## `.QOM` Compact Payload Layout
+
+The compact `.QOM` payload is generated as a real 22-byte big-endian binary struct in `aegis_kernel.py`, not as a JSON placeholder:
+
+`struct.pack(">IHHHHHQ", phase_u32, coherence_u16, lifecycle_u16, trust_u16, backaction_u16, governance_u16, opte_u64)`
+
+That layout is:
+
+| Field | Type | Bits |
+|---|---:|---:|
+| phase estimate | unsigned int | 32 |
+| coherence / confidence | unsigned short | 16 |
+| lifecycle epoch | unsigned short | 16 |
+| trust index | unsigned short | 16 |
+| backaction/risk proxy | unsigned short | 16 |
+| governance bitmask | unsigned short | 16 |
+| OPTE policy context prefix | unsigned long long | 64 |
+
+Total: `176 bits`. `tests/test_kernel.py::test_qom_compact_payload_is_exact_176_bit_struct` unpacks the emitted bytes and validates the field boundaries.
 
 ## Qiskit Bridge
 

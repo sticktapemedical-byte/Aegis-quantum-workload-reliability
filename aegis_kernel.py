@@ -15,6 +15,11 @@ from pathlib import Path
 from typing import Iterable
 
 
+QOM_COMPACT_STRUCT_FORMAT = ">IHHHHHQ"
+QOM_COMPACT_PAYLOAD_BYTES = struct.calcsize(QOM_COMPACT_STRUCT_FORMAT)
+QOM_COMPACT_PAYLOAD_BITS = QOM_COMPACT_PAYLOAD_BYTES * 8
+
+
 class GovernanceState(IntFlag):
     NORMAL = 0
     STORM_PROTECT = 1 << 0
@@ -1001,7 +1006,7 @@ class AegisContinuityKernel:
         governance_u16 = int(self.governance_mask) & 0xFFFF
         opte_u64 = int(opte_policy_context_hash[:16], 16)
         return struct.pack(
-            ">IHHHHHQ",
+            QOM_COMPACT_STRUCT_FORMAT,
             phase_u32,
             coherence_u16,
             lifecycle_u16,
@@ -1608,7 +1613,7 @@ def print_reviewer_summary(deterministic: list[KernelCycleResult], monte_carlo: 
     telemetry = final.reviewer_telemetry
     cryo = final.cryogenic_scheduler
     hardware = final.hardware_register_target
-    print("AEGIS Q-SRE reviewer metrics")
+    print("AEGIS site reliability reviewer metrics")
     print(f"cycles={monte_carlo['cycles']}")
     print(f"continuity_yield={monte_carlo['empirical_continuity_yield']:.6f}")
     print(f"integrity_preserved_yield={monte_carlo['integrity_preserved_yield']:.6f}")
@@ -1630,7 +1635,7 @@ def print_reviewer_summary(deterministic: list[KernelCycleResult], monte_carlo: 
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="AEGIS .QOM Continuity Kernel Simulation Suite")
+    parser = argparse.ArgumentParser(description="AEGIS continuity-kernel simulation suite")
     parser.add_argument("--seed", type=int, default=2026)
     parser.add_argument("--monte-carlo-cycles", type=int, default=1000)
     parser.add_argument("--output", type=Path, default=Path("aegis_kernel_results.json"))
@@ -1645,7 +1650,7 @@ def main() -> None:
         print_reviewer_summary(deterministic, monte_carlo, args.output)
         return
 
-    print("AEGIS .QOM AegisContinuityKernel simulation complete")
+    print("AEGIS AegisContinuityKernel simulation complete")
     print(f"Deterministic cycles: {len(deterministic)}")
     print(f"Monte Carlo cycles: {monte_carlo['cycles']}")
     print(f"Empirical continuity yield: {monte_carlo['empirical_continuity_yield']:.6f}")

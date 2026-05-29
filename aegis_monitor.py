@@ -214,7 +214,7 @@ def list_artifacts() -> list[dict[str, object]]:
 def build_health_payload() -> dict[str, object]:
     return {
         "status": "ok",
-        "monitor": "AEGIS Q-SRE Monitor",
+        "monitor": "AEGIS Reliability Control Monitor",
         "url": "http://127.0.0.1:8765",
         "controls": {
             "cycles_input": True,
@@ -792,7 +792,7 @@ HTML = r"""<!doctype html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AEGIS Q-SRE Monitor</title>
+  <title>AEGIS Reliability Control Monitor</title>
   <style>
     :root {
       --bg: #111111;
@@ -1062,7 +1062,7 @@ HTML = r"""<!doctype html>
 <body>
   <header>
     <div>
-      <h1>AEGIS Q-SRE Monitor</h1>
+      <h1>AEGIS Reliability Control Monitor</h1>
       <div class="sub">Continuity kernel, unsafe-output prevention, trust mesh, .QOM snapshot lineage</div>
     </div>
     <div class="actions">
@@ -2003,7 +2003,7 @@ function summaryText() {
   if (!current) return "No AEGIS monitor data loaded.";
   const mc = current.monte_carlo;
   return [
-    "AEGIS Q-SRE Monitor Summary",
+    "AEGIS Reliability Control Monitor Summary",
     `Generated: ${new Date(current.generated_at_unix * 1000).toLocaleString()}`,
     `Cycles: ${mc.cycles}`,
     `Continuity Yield: ${pct(mc.empirical_continuity_yield)}`,
@@ -2595,7 +2595,7 @@ class MonitorHandler(BaseHTTPRequestHandler):
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="AEGIS Q-SRE local monitor")
+    parser = argparse.ArgumentParser(description="AEGIS reliability-control local monitor")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8765)
     args = parser.parse_args()

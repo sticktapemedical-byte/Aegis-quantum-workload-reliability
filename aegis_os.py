@@ -96,7 +96,7 @@ def run_master_suite(seed: int, monte_carlo_cycles: int, reviewer_mode: bool) ->
     results = []
     if not reviewer_mode:
         print("=" * 118)
-        print("AEGIS v10.0 / Q-SRE MASTER PYTHON SIMULATION SUITE")
+        print("AEGIS Site Reliability Control-Plane Simulation Suite")
         print("Canonical runtime loop: " + " -> ".join(PIPELINE))
         print("=" * 118)
     for step in range(1, 151):
@@ -115,7 +115,7 @@ def run_master_suite(seed: int, monte_carlo_cycles: int, reviewer_mode: bool) ->
         telemetry = final.reviewer_telemetry
         cryo = final.cryogenic_scheduler
         hardware = final.hardware_register_target
-        print("AEGIS Q-SRE reviewer metrics")
+        print("AEGIS site reliability reviewer metrics")
         print(f"steps={summary['step_count']}")
         print(f"continuity_yield={summary['continuity_yield']:.6f}")
         print(f"integrity_preserved_yield={summary['integrity_preserved_yield']:.6f}")
@@ -155,7 +155,7 @@ def run_master_suite(seed: int, monte_carlo_cycles: int, reviewer_mode: bool) ->
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="AEGIS Q-SRE master 150-cycle simulation suite")
+    parser = argparse.ArgumentParser(description="AEGIS site reliability 150-cycle simulation suite")
     parser.add_argument("--seed", type=int, default=2026)
     parser.add_argument("--monte-carlo-cycles", type=int, default=1000)
     parser.add_argument("--output", type=Path, default=Path("aegis_os_report.json"))

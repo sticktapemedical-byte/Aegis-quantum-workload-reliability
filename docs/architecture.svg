@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1120" height="620" viewBox="0 0 1120 620" role="img" aria-labelledby="title desc">
-  <title id="title">AEGIS Q-SRE Control Plane Architecture</title>
+  <title id="title">AEGIS Site Reliability Control Plane Architecture</title>
   <desc id="desc">Simplified simulation architecture showing telemetry ingestion, control-plane filtering, governance, QOM frame emission, and artifacts.</desc>
   <defs>
     <style>
@@ -16,7 +16,7 @@
     </marker>
   </defs>
   <rect class="bg" x="0" y="0" width="1120" height="620"/>
-  <text class="text" x="40" y="46">AEGIS Q-SRE Control Plane Simulation</text>
+  <text class="text" x="40" y="46">AEGIS Site Reliability Control Plane Simulation</text>
   <text class="small" x="40" y="74">Reliability governance around probabilistic telemetry. Not a physical quantum operating system.</text>
 
   <rect class="box" x="40" y="120" width="230" height="110"/>
