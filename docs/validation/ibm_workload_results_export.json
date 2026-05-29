@@ -1,9 +1,10 @@
 {
   "claim_boundary": "Workload/job metadata export; does not add new QPU evidence unless cloud results are explicitly retrieved.",
-  "cloud_error": "IBM Runtime job-history request exceeded the local 90 second timeout; IBM Cloud appears unavailable or under maintenance.",
+  "cloud_error": "IBM Runtime job-history request exceeded the local 180 second timeout; IBM Cloud/Runtime appears unavailable or under maintenance.",
   "cloud_jobs": [],
   "cloud_status": "timed_out",
   "created_utc": "2026-05-29T14:35:45.292281+00:00",
+  "last_cloud_attempt_utc": "2026-05-29T14:50:36.466441+00:00",
   "local_sanitized_workloads": [
     {
       "artifact": "docs/validation/raw_counts_sanitized/accepted_vs_rejected.json",
