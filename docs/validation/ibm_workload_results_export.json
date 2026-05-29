@@ -1,10 +1,359 @@
 {
   "claim_boundary": "Workload/job metadata export; does not add new QPU evidence unless cloud results are explicitly retrieved.",
-  "cloud_error": "IBM Runtime job-history request exceeded the local 180 second timeout; IBM Cloud/Runtime appears unavailable or under maintenance.",
-  "cloud_jobs": [],
-  "cloud_status": "timed_out",
-  "created_utc": "2026-05-29T14:35:45.292281+00:00",
-  "last_cloud_attempt_utc": "2026-05-29T14:50:36.466441+00:00",
+  "cloud_jobs": [
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 05:07:18.875476-05:00",
+      "job_id": "d8cmalj8ch0s738v3hi0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 2.2127508}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 03:46:14.261354-05:00",
+      "job_id": "d8cl4lj8ch0s738v1ql0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.095223058}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 03:45:40.342858-05:00",
+      "job_id": "d8cl4d2jki0s73are7lg",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.625647165}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 03:45:28.451036-05:00",
+      "job_id": "d8cl4a47avuc73dr5mq0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.625647165}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 03:45:16.183112-05:00",
+      "job_id": "d8cl472jki0s73are7e0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.625647165}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 03:45:03.912540-05:00",
+      "job_id": "d8cl43qjki0s73are790",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.625647165}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 03:44:35.963810-05:00",
+      "job_id": "d8cl3sr8ch0s738v1pp0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.527331159}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 03:44:22.638005-05:00",
+      "job_id": "d8cl3pj8amns73bjn6og",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.527331159}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 03:44:10.343914-05:00",
+      "job_id": "d8cl3mj8amns73bjn6k0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.527331159}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 03:43:58.219739-05:00",
+      "job_id": "d8cl3jj8amns73bjn6dg",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.527331159}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 03:43:30.223211-05:00",
+      "job_id": "d8cl3cj8amns73bjn5vg",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 3.204899777}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 03:41:45.487817-05:00",
+      "job_id": "d8cl2ib8ch0s738v1o0g",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 2.2127508}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 03:39:56.326134-05:00",
+      "job_id": "d8cl1n47avuc73dr5j3g",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 2.2127508}"
+    },
+    {
+      "backend": "ibm_kingston",
+      "creation_date": "2026-05-29 03:39:15.108745-05:00",
+      "job_id": "d8cl1cqjki0s73are3og",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 2.524628896}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 03:38:48.483693-05:00",
+      "job_id": "d8cl1647avuc73dr5iig",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 03:37:55.540467-05:00",
+      "job_id": "d8cl0os7avuc73dr5i40",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 2.2127508}"
+    },
+    {
+      "backend": "ibm_kingston",
+      "creation_date": "2026-05-29 03:37:28.995488-05:00",
+      "job_id": "d8cl0i2jki0s73are2rg",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 2.524628896}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 03:36:58.273422-05:00",
+      "job_id": "d8cl0aj8ch0s738v1ll0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_fez",
+      "creation_date": "2026-05-29 02:36:37.570395-05:00",
+      "job_id": "d8ck41c7avuc73dr4fng",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.19807061}"
+    },
+    {
+      "backend": "ibm_kingston",
+      "creation_date": "2026-05-29 02:36:24.073132-05:00",
+      "job_id": "d8ck3u2jki0s73ard10g",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 2.524628896}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:36:08.342636-05:00",
+      "job_id": "d8ck3q38amns73bjm0m0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_fez",
+      "creation_date": "2026-05-29 02:11:16.318307-05:00",
+      "job_id": "d8cjo538amns73bjljm0",
+      "status": "CANCELLED",
+      "usage_estimation": "{'quantum_seconds': 1.19807061}"
+    },
+    {
+      "backend": "ibm_kingston",
+      "creation_date": "2026-05-29 02:11:02.541174-05:00",
+      "job_id": "d8cjo1j8ch0s738v05mg",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 2.524628896}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:10:48.686498-05:00",
+      "job_id": "d8cjnu38ch0s738v05bg",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:10:20.051361-05:00",
+      "job_id": "d8cjnmr8amns73bjliv0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 3.204899777}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:10:05.211890-05:00",
+      "job_id": "d8cjnjb8ch0s738v04t0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 3.204899777}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:09:50.024352-05:00",
+      "job_id": "d8cjnfb8amns73bjlimg",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 3.204899777}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:09:36.169486-05:00",
+      "job_id": "d8cjnc2jki0s73arcitg",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 3.204899777}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:09:21.543967-05:00",
+      "job_id": "d8cjn8b8amns73bjlif0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 3.204899777}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:09:07.606769-05:00",
+      "job_id": "d8cjn4s7avuc73dr41b0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 3.204899777}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:08:53.862030-05:00",
+      "job_id": "d8cjn1ajki0s73arcij0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 3.204899777}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:08:39.412091-05:00",
+      "job_id": "d8cjmts7avuc73dr4110",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 3.204899777}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:08:25.677528-05:00",
+      "job_id": "d8cjmqb8amns73bjlhtg",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 3.204899777}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:08:12.031839-05:00",
+      "job_id": "d8cjmmr8amns73bjlhn0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 3.204899777}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:07:40.177375-05:00",
+      "job_id": "d8cjmf38amns73bjlhc0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 2.2127508}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:07:26.352367-05:00",
+      "job_id": "d8cjmbijki0s73archk0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 2.2127508}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:07:12.840749-05:00",
+      "job_id": "d8cjm82jki0s73archgg",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 2.2127508}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:07:00.619431-05:00",
+      "job_id": "d8cjm547avuc73dr3vqg",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 2.2127508}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:06:36.618832-05:00",
+      "job_id": "d8cjlv38ch0s738v02vg",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:06:23.683471-05:00",
+      "job_id": "d8cjlrs7avuc73dr3vhg",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:06:11.353726-05:00",
+      "job_id": "d8cjlor8amns73bjlglg",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:05:45.097341-05:00",
+      "job_id": "d8cjlic7avuc73dr3v70",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:05:32.941921-05:00",
+      "job_id": "d8cjlf2jki0s73arcgl0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:05:20.491653-05:00",
+      "job_id": "d8cjlc47avuc73dr3v0g",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:05:07.209126-05:00",
+      "job_id": "d8cjl8qjki0s73arcgd0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:04:54.775171-05:00",
+      "job_id": "d8cjl5j8ch0s738v0240",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:04:40.589297-05:00",
+      "job_id": "d8cjl22jki0s73arcg50",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:04:28.895844-05:00",
+      "job_id": "d8cjkv2jki0s73arcg1g",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:04:15.292337-05:00",
+      "job_id": "d8cjkrr8amns73bjlfng",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:04:03.410695-05:00",
+      "job_id": "d8cjkor8ch0s738v01jg",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    }
+  ],
+  "cloud_status": "ok",
+  "created_utc": "2026-05-29T14:47:17.551849+00:00",
   "local_sanitized_workloads": [
     {
       "artifact": "docs/validation/raw_counts_sanitized/accepted_vs_rejected.json",
