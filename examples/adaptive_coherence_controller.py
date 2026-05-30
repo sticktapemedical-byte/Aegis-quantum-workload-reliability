@@ -13,19 +13,54 @@ if str(ROOT) not in sys.path:
 from examples.delay_ramp import run_delay_ramp
 
 
-def fit_effective_decay(delays_ms: list[float], survivals: list[float]) -> dict[str, float]:
+def fit_effective_decay(delays_ms: list[float], survivals: list[float]) -> dict[str, object]:
     pairs = [(x, y) for x, y in zip(delays_ms, survivals) if x >= 0 and 0 < y < 1.0]
     if len(pairs) < 2:
-        return {"t_eff_ms": 0.0, "slope": 0.0, "intercept": 0.0}
+        return {
+            "valid": False,
+            "fit_status": "insufficient_decay_points",
+            "t_eff_ms": None,
+            "slope": None,
+            "intercept": None,
+            "r_squared": None,
+        }
     xs = [p[0] for p in pairs]
     ys = [math.log(p[1]) for p in pairs]
     xbar = sum(xs) / len(xs)
     ybar = sum(ys) / len(ys)
-    denom = sum((x - xbar) ** 2 for x in xs) or 1.0
+    denom = sum((x - xbar) ** 2 for x in xs)
+    if denom <= 0:
+        return {
+            "valid": False,
+            "fit_status": "insufficient_delay_variation",
+            "t_eff_ms": None,
+            "slope": None,
+            "intercept": None,
+            "r_squared": None,
+        }
     slope = sum((x - xbar) * (y - ybar) for x, y in zip(xs, ys)) / denom
     intercept = ybar - slope * xbar
-    t_eff = -1.0 / slope if slope < 0 else float("inf")
-    return {"t_eff_ms": t_eff if math.isfinite(t_eff) else 999999.0, "slope": slope, "intercept": intercept}
+    residual = sum((y - (slope * x + intercept)) ** 2 for x, y in zip(xs, ys))
+    total = sum((y - ybar) ** 2 for y in ys)
+    r_squared = 1.0 - (residual / total) if total > 0 else 1.0
+    if slope >= 0:
+        return {
+            "valid": False,
+            "fit_status": "no_negative_decay_slope",
+            "t_eff_ms": None,
+            "slope": slope,
+            "intercept": intercept,
+            "r_squared": r_squared,
+        }
+    t_eff = -1.0 / slope
+    return {
+        "valid": math.isfinite(t_eff),
+        "fit_status": "valid_decay_fit" if math.isfinite(t_eff) else "non_finite_decay_fit",
+        "t_eff_ms": t_eff if math.isfinite(t_eff) else None,
+        "slope": slope,
+        "intercept": intercept,
+        "r_squared": r_squared,
+    }
 
 
 def synthetic_arm(delays_ms: list[float], arm: str) -> dict[str, object]:
@@ -43,7 +78,7 @@ def main() -> None:
     parser.add_argument("--real", action="store_true")
     parser.add_argument("--backend", default="ibm_marrakesh")
     parser.add_argument("--channel", default="ibm_quantum_platform")
-    parser.add_argument("--shots", type=int, default=256)
+    parser.add_argument("--shots", type=int, default=1024)
     parser.add_argument("--delays-ms", default="0,1,2,5")
     parser.add_argument("--output", type=Path, default=Path("adaptive_coherence_controller.json"))
     args = parser.parse_args()
@@ -54,15 +89,18 @@ def main() -> None:
         arms = [{"arm": "aegis_selected_delay_ramp", "records": ramp["records"], "fit": fit_effective_decay(delays, survivals)}]
     else:
         arms = [synthetic_arm(delays, arm) for arm in ("none", "xy4", "cpmg", "aegis_selected")]
-    selected = max(arms, key=lambda arm: float(arm["fit"]["t_eff_ms"]))
+    valid_arms = [arm for arm in arms if arm["fit"].get("valid") and arm["fit"].get("t_eff_ms") is not None]
+    selected = max(valid_arms, key=lambda arm: float(arm["fit"]["t_eff_ms"])) if valid_arms else None
     payload = {
         "source": "aegis_adaptive_coherence_controller",
         "real": args.real,
         "backend": args.backend,
         "delays_ms": delays,
+        "shots_per_delay": args.shots,
         "arms": arms,
-        "selected_arm": selected["arm"],
-        "selected_t_eff_ms": selected["fit"]["t_eff_ms"],
+        "selected_arm": selected["arm"] if selected else None,
+        "selected_t_eff_ms": selected["fit"]["t_eff_ms"] if selected else None,
+        "fit_status": "valid_decay_fit" if selected else "no_valid_decay_fit",
         "claim_boundary": "Estimates effective workload survival over returned outputs; not intrinsic T1/T2 extension.",
     }
     args.output.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")

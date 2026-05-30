@@ -1,8 +1,12 @@
 # AEGIS Quantum Workload Reliability Framework
 
+[![AEGIS Test Suite](https://github.com/sticktapemedical-byte/Aegis-quantum-workload-reliability/actions/workflows/test.yml/badge.svg)](https://github.com/sticktapemedical-byte/Aegis-quantum-workload-reliability/actions/workflows/test.yml)
+
 AEGIS is an experimental quantum workload reliability framework for evaluating QPU outputs, selecting execution paths, preserving result lineage, and measuring accepted-result quality under noisy cloud-QPU conditions.
 
 AEGIS does **not** claim to improve intrinsic qubit coherence, alter hardware physics, solve quantum noise, replace quantum error correction, or control public IBM Quantum hardware while a circuit is actively running. This repository evaluates whether adaptive selection and classical governance can improve accepted workload quality, coherence-sensitive workload survival metrics, and resource cost per accepted result under tested conditions.
+
+**Maturity note:** this is an early-stage research/portfolio repository with limited public community validation. Treat the IBM runs and simulator tests as reproducible evidence for the current claim boundary, not as proof of production readiness or broad field adoption.
 
 ## What This Is / What This Is Not
 
@@ -11,7 +15,7 @@ AEGIS does **not** claim to improve intrinsic qubit coherence, alter hardware ph
 | A Python reliability framework around probabilistic telemetry and QPU output histograms. | A physical quantum operating system or deployed hardware controller. |
 | A classical post-processing and workload-governance layer with optional IBM Quantum Runtime bridges. | A claim that software physically removes or suppresses quantum noise. |
 | A test harness for accepted/rejected quality gates, backend selection, mitigation selection, `.QOM` metadata, and Merkle lineage. | Evidence of intrinsic device-level coherence improvement. |
-| A noncommercial research/portfolio codebase with commercial licensing reserved separately. | A permission grant for commercial platform integration. |
+| A noncommercial research/portfolio codebase. | A permission grant or signal of production-grade commercial adoption. |
 
 ## Current Execution Model
 
@@ -30,6 +34,16 @@ This is **not real-time QPU control during a running circuit**. Dynamic-circuit 
 
 For technical review, the safest name is **Aegis Continuity Kernel** or **Probabilistic SRE Control Plane**.
 
+Some internal labels are intentionally evocative but are software models unless a document explicitly says otherwise:
+
+| Term | Read As | Do Not Read As |
+| --- | --- | --- |
+| `coherence` / `coherence-sensitive` | Returned-output survival or GHZ/count quality proxy under tested workloads. | Intrinsic T1/T2 improvement or device physics control. |
+| `cryogenic scheduler` | Cryogenic-aware cost proxy used in simulation/governance. | Refrigerator control, dilution-unit scheduling, or physical cryogenic hardware integration. |
+| `secure enclave vault` | Software HSM-style key-lineage and delayed-erasure model. | Deployed secure-enclave silicon, HSM certification, or hardware root of trust. |
+| `hardware register target` | Conceptual software register-map proposal for future integration review. | Synthesized RTL, FPGA firmware, ASIC logic, or active hardware control. |
+| Verilog-like snippets | Documentation stubs showing possible signal intent. | Validated RTL or a functioning hardware implementation. |
+
 ## Repository Map
 
 | File or directory | Purpose |
@@ -46,6 +60,9 @@ For technical review, the safest name is **Aegis Continuity Kernel** or **Probab
 ## Key Documentation
 
 - [Claim Boundary](docs/claim_boundary.md)
+- [Terminology Boundary](docs/terminology_boundary.md)
+- [Single-Cycle Walkthrough](docs/single_cycle_walkthrough.md)
+- [Backend Selection Technical Note](docs/technical_note_backend_selection.md)
 - [Implementation Status](docs/implementation_status.md)
 - [Validation Plan](docs/validation_plan.md)
 - [IBM QPU Test Plan](docs/ibm_qpu_test_plan.md)
@@ -66,12 +83,13 @@ For technical review, the safest name is **Aegis Continuity Kernel** or **Probab
 The latest campaign report is here:
 
 - [AEGIS Adaptive IBM Backend Campaign - 2026-05-29](docs/validation/AEGIS_Adaptive_IBM_Backend_Campaign_2026-05-29.md)
+- [Test A Three-Backend Follow-Up - 2026-05-29](docs/validation/AEGIS_Test_A_Three_Backend_Followup_2026-05-29.md)
 
 Current public-safe validation vault:
 
 - Sanitized artifacts represented: `32`
 - Total tracked shots in sanitized summaries: `71,424`
-- Tests passing locally: `28`
+- Tests passing locally: `35`
 - `.QOM` compact payload width: `176 bits`
 
 Campaign highlights:
@@ -114,11 +132,18 @@ python examples/ibm_bridge.py --shots 256 --output ibm_bridge_fake_result.json
 
 Real IBM jobs require local credentials and explicit `--real` flags. See [IBM QPU Test Plan](docs/ibm_qpu_test_plan.md).
 
+Measure reviewer telemetry compression on fake or real backend output:
+
+```powershell
+python examples/compression_telemetry_check.py --shots 256 --output compression_telemetry_check.json
+python examples/compression_telemetry_check.py --real --backend ibm_marrakesh --shots 256 --output compression_telemetry_check_real.json
+```
+
 ## License And Commercial Use
 
 This repository is published for noncommercial research, evaluation, education, benchmarking, and technical review under `LICENSE`.
 
-Commercial use is not included in the public license. Production deployment, proprietary product integration, hosted service use, paid consulting delivery, internal enterprise platform integration, commercial redistribution, or use of the project identity in a commercial offer requires a separate written commercial license. See `COMMERCIAL_LICENSE.md`.
+Commercial use is not included in the public license. This reservation is a legal boundary, not a claim of market traction, deployment, procurement readiness, or community adoption. See `COMMERCIAL_LICENSE.md`.
 
 ## Support
 

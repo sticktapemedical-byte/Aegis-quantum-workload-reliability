@@ -350,10 +350,241 @@
       "job_id": "d8cjkor8ch0s738v01jg",
       "status": "DONE",
       "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:03:50.194420-05:00",
+      "job_id": "d8cjklk7avuc73dr3u8g",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:03:36.498280-05:00",
+      "job_id": "d8cjki38amns73bjlf9g",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:03:24.285232-05:00",
+      "job_id": "d8cjkf47avuc73dr3u00",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:03:10.591248-05:00",
+      "job_id": "d8cjkbk7avuc73dr3tsg",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:02:58.381223-05:00",
+      "job_id": "d8cjk8j8ch0s738v0100",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': None}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:02:45.738266-05:00",
+      "job_id": "d8cjk5b8amns73bjleq0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:02:33.285793-05:00",
+      "job_id": "d8cjk2b8amns73bjlel0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:02:20.481161-05:00",
+      "job_id": "d8cjjv38amns73bjlegg",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:01:50.566667-05:00",
+      "job_id": "d8cjjnk7avuc73dr3t3g",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:01:37.691908-05:00",
+      "job_id": "d8cjjkajki0s73arceh0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:01:24.273715-05:00",
+      "job_id": "d8cjjh38ch0s738v003g",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:01:09.773825-05:00",
+      "job_id": "d8cjjdb8ch0s738uvvu0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:00:55.355786-05:00",
+      "job_id": "d8cjj9r8amns73bjldk0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:00:42.147673-05:00",
+      "job_id": "d8cjj6j8ch0s738uvvjg",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:00:28.986101-05:00",
+      "job_id": "d8cjj32jki0s73arcdmg",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 02:00:13.088464-05:00",
+      "job_id": "d8cjiv38amns73bjld70",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 01:59:59.523531-05:00",
+      "job_id": "d8cjirr8amns73bjld20",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-29 01:59:45.925544-05:00",
+      "job_id": "d8cjioajki0s73arcda0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.096234621}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-28 21:36:22.768746-05:00",
+      "job_id": "d8cfn9j8amns73bjg950",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 2.17395868}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-28 21:35:47.658080-05:00",
+      "job_id": "d8cfn0qjki0s73ar7990",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 3.179328582}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-28 21:34:43.700779-05:00",
+      "job_id": "d8cfmgs7avuc73dqumgg",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 3.179328582}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-28 21:34:16.888078-05:00",
+      "job_id": "d8cfma2jki0s73ar78a0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 3.204899777}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-28 21:29:41.306820-05:00",
+      "job_id": "d8cfk538amns73bjg5gg",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 3.453011436}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-28 21:28:50.970739-05:00",
+      "job_id": "d8cfjoijki0s73ar75bg",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 6.028417284}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-28 21:16:31.559881-05:00",
+      "job_id": "d8cfdvqjki0s73ar6uog",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 2.459264101}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-28 21:14:42.940157-05:00",
+      "job_id": "d8cfd4ijki0s73ar6tkg",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.963778297}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-28 21:12:51.006335-05:00",
+      "job_id": "d8cfc8ijki0s73ar6ri0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 2.459264101}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-28 21:10:31.014055-05:00",
+      "job_id": "d8cfb5j8ch0s738uqcd0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.095223058}"
+    },
+    {
+      "backend": "ibm_fez",
+      "creation_date": "2026-05-28 21:05:16.207599-05:00",
+      "job_id": "d8cf8n38ch0s738uq6vg",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.19807061}"
+    },
+    {
+      "backend": "ibm_kingston",
+      "creation_date": "2026-05-28 21:03:24.882741-05:00",
+      "job_id": "d8cf7r2jki0s73ar6gv0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 2.524628896}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-28 21:03:08.364120-05:00",
+      "job_id": "d8cf7n47avuc73dqtus0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.072987296}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-28 21:02:27.038958-05:00",
+      "job_id": "d8cf7cj8ch0s738uq3qg",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 1.527331159}"
+    },
+    {
+      "backend": "ibm_marrakesh",
+      "creation_date": "2026-05-28 20:48:47.667146-05:00",
+      "job_id": "d8cf0vr8ch0s738uppq0",
+      "status": "DONE",
+      "usage_estimation": "{'quantum_seconds': 2.2127508}"
     }
   ],
   "cloud_status": "ok",
-  "created_utc": "2026-05-29T14:47:17.551849+00:00",
+  "created_utc": "2026-05-29T16:46:21.228816+00:00",
   "local_sanitized_workloads": [
     {
       "artifact": "docs/validation/raw_counts_sanitized/accepted_vs_rejected.json",

@@ -24,7 +24,17 @@ python examples/dynamical_decoupling_insertion.py --real --backend ibm_marrakesh
 python examples/dynamic_circuit_governance.py --real --backend ibm_marrakesh --shots 256 --output dynamic_circuit_governance.json
 ```
 
+Compression telemetry check:
+
+```powershell
+python examples/compression_telemetry_check.py --real --backend ibm_marrakesh --shots 256 --output compression_telemetry_check_real.json
+```
+
+This submits one real GHZ-style job and records the measured reviewer telemetry compression ratio as `raw_telemetry_json_bytes / qom_compact_payload_bytes`.
+
 Avoid heavily queued backends unless the test explicitly needs cross-device coverage.
+
+If multiple IBM Cloud accounts or Quantum Runtime instances are visible, set `IBM_QUANTUM_INSTANCE` in local `.env` to the Runtime instance CRN or service name before saving the account and discovering backends.
 
 ## Current Real Campaign Summary
 
@@ -55,4 +65,3 @@ The latest campaign included:
 | DD-style echo gates | Implemented as normal gates/delays where compilation supports them. |
 | Full pulse-level control | Not claimed for public IBM Runtime. |
 | RB/T1/T2/tomography campaign | Requires dedicated shot budget and protocol. |
-

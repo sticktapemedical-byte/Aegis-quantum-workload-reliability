@@ -14,6 +14,14 @@ from enum import IntFlag
 from pathlib import Path
 from typing import Iterable
 
+from aegis_scoring import (
+    calculate_q_conf_score,
+    compact_payload_compression_ratio,
+    environment_severity,
+    normalize_meaningful_continuity_score,
+    resolve_gate_thresholds_for_scenario,
+)
+
 
 QOM_COMPACT_STRUCT_FORMAT = ">IHHHHHQ"
 QOM_COMPACT_PAYLOAD_BYTES = struct.calcsize(QOM_COMPACT_STRUCT_FORMAT)
@@ -52,14 +60,12 @@ class EnvironmentVector:
     latency: float
 
     def severity(self) -> float:
-        return clamp(
-            (
-                0.18 * self.thermal
-                + 0.22 * self.electromagnetic
-                + 0.18 * self.voltage
-                + 0.24 * self.radiation
-                + 0.18 * self.latency
-            )
+        return environment_severity(
+            thermal=self.thermal,
+            electromagnetic=self.electromagnetic,
+            voltage=self.voltage,
+            radiation=self.radiation,
+            latency=self.latency,
         )
 
 
@@ -260,21 +266,16 @@ class AegisContinuityKernel:
         }
 
     def execute_cycle(self, telemetry_batch: list[NodeTelemetry], scenario: str = "runtime") -> KernelCycleResult:
+        # Pipeline shape: ingest -> score -> govern/gate -> ledger/report.
+        # The stage helpers keep the stateful orchestration narrow while the
+        # stateless scoring math lives in aegis_scoring.py for direct tests.
         self.epoch += 1
         self.governance_mask = GovernanceState.CIRCUIT_ABORT if self.abort_latched else GovernanceState.NORMAL
         self.hard_abort_cause_mask = AbortCause.NONE
         if self.recovery_validation_remaining > 0:
             self.governance_mask |= GovernanceState.RECOVERY_VALIDATE
 
-        environment = self.ingest_telemetry(telemetry_batch)
-        kappa_map = self.recompute_kappa(telemetry_batch)
-        projected = self.kinetic_projection(telemetry_batch)
-        unwrapped = self.manifold_unwrap(projected)
-        estimated_vectors = self.estimate_state(telemetry_batch, kappa_map, unwrapped)
-        fused_vector, quorum_ok, quorum_weight, required_weight, active_nodes = self.verify_quorum(
-            estimated_vectors, kappa_map
-        )
-        anchor_ok, anchor_delta = self.cross_check_anchor(fused_vector, environment)
+        environment, kappa_map, fused_vector, quorum_ok, quorum_weight, required_weight, active_nodes, anchor_ok, anchor_delta = self._stage_ingest_and_score(telemetry_batch)
         q_conf = self.calculate_q_conf(fused_vector, kappa_map, environment)
         kappa_vector_mean = self.calculate_kappa_vector_mean(kappa_map)
         trust_channels = self.calculate_trust_channels(
@@ -296,18 +297,15 @@ class AegisContinuityKernel:
         )
         meaningful_continuity_norm = self.normalize_meaningful_continuity(meaningful_continuity_raw)
         gate_mc_threshold, gate_q_threshold = self.resolve_gate_thresholds(scenario)
-        self.state_governor(
-            telemetry_batch=telemetry_batch,
-            environment=environment,
-            quorum_ok=quorum_ok,
-            anchor_ok=anchor_ok,
-            anchor_delta=anchor_delta,
-            q_conf=q_conf,
+        self._stage_govern(
+            telemetry_batch,
+            environment,
+            quorum_ok,
+            anchor_ok,
+            anchor_delta,
+            q_conf,
+            kappa_map,
         )
-        if self.governance_mask & GovernanceState.CIRCUIT_ABORT:
-            self.abort_latched = True
-        self.release_recovered_quarantines(kappa_map, environment, anchor_ok)
-        self.advance_recovery_validation(anchor_ok, quorum_ok, environment)
         continuity_gate_passed = self.evaluate_continuity_gate(
             meaningful_continuity_norm,
             q_conf,
@@ -352,22 +350,16 @@ class AegisContinuityKernel:
                 | GovernanceState.HARD_ABORT
             )
         )
-        abort_tier = self.resolve_abort_tier()
-        compact_qom_payload = self.emit_compact_qom_payload(
-            q_conf=q_conf,
-            meaningful_continuity_norm=meaningful_continuity_norm,
-            raw_unsafe_output_risk=raw_unsafe_output_risk,
-            trust_index=trust_channels.normalized,
-            opte_policy_context_hash=opte_policy_context_hash,
-        )
-        snapshot_frame = self.emit_snapshot(
+        abort_tier, compact_qom_payload, snapshot_frame, block = self._stage_ledger(
             fused_vector,
             q_conf,
+            meaningful_continuity_norm,
             meaningful_continuity_raw,
+            raw_unsafe_output_risk,
+            trust_channels.normalized,
             environment,
             opte_policy_context_hash,
         )
-        block = self.write_ledger(snapshot_frame, fused_vector, meaningful_continuity_raw)
         hardware_register_target = self.build_hardware_register_target(environment)
         secure_enclave_vault = self.build_secure_enclave_vault(block)
         cryogenic_scheduler = self.build_cryogenic_scheduler(telemetry_batch, environment, active_nodes)
@@ -421,6 +413,65 @@ class AegisContinuityKernel:
             reviewer_telemetry=reviewer_telemetry,
             snapshot_frame_hex_prefix=snapshot_frame[:24].hex(),
         )
+
+    def _stage_ingest_and_score(
+        self,
+        telemetry_batch: list[NodeTelemetry],
+    ) -> tuple[EnvironmentVector, dict[str, KappaScores], list[float], bool, float, float, int, bool, float]:
+        environment = self.ingest_telemetry(telemetry_batch)
+        kappa_map = self.recompute_kappa(telemetry_batch)
+        projected = self.kinetic_projection(telemetry_batch)
+        unwrapped = self.manifold_unwrap(projected)
+        estimated_vectors = self.estimate_state(telemetry_batch, kappa_map, unwrapped)
+        fused_vector, quorum_ok, quorum_weight, required_weight, active_nodes = self.verify_quorum(estimated_vectors, kappa_map)
+        anchor_ok, anchor_delta = self.cross_check_anchor(fused_vector, environment)
+        return environment, kappa_map, fused_vector, quorum_ok, quorum_weight, required_weight, active_nodes, anchor_ok, anchor_delta
+
+    def _stage_govern(
+        self,
+        telemetry_batch: list[NodeTelemetry],
+        environment: EnvironmentVector,
+        quorum_ok: bool,
+        anchor_ok: bool,
+        anchor_delta: float,
+        q_conf: float,
+        kappa_map: dict[str, KappaScores],
+    ) -> None:
+        self.state_governor(
+            telemetry_batch=telemetry_batch,
+            environment=environment,
+            quorum_ok=quorum_ok,
+            anchor_ok=anchor_ok,
+            anchor_delta=anchor_delta,
+            q_conf=q_conf,
+        )
+        if self.governance_mask & GovernanceState.CIRCUIT_ABORT:
+            self.abort_latched = True
+        self.release_recovered_quarantines(kappa_map, environment, anchor_ok)
+        self.advance_recovery_validation(anchor_ok, quorum_ok, environment)
+
+    def _stage_ledger(
+        self,
+        fused_vector: list[float],
+        q_conf: float,
+        meaningful_continuity_norm: float,
+        meaningful_continuity_raw: float,
+        raw_unsafe_output_risk: float,
+        trust_index: float,
+        environment: EnvironmentVector,
+        opte_policy_context_hash: str,
+    ) -> tuple[str, bytes, bytes, LedgerBlock]:
+        abort_tier = self.resolve_abort_tier()
+        compact_qom_payload = self.emit_compact_qom_payload(
+            q_conf=q_conf,
+            meaningful_continuity_norm=meaningful_continuity_norm,
+            raw_unsafe_output_risk=raw_unsafe_output_risk,
+            trust_index=trust_index,
+            opte_policy_context_hash=opte_policy_context_hash,
+        )
+        snapshot_frame = self.emit_snapshot(fused_vector, q_conf, meaningful_continuity_raw, environment, opte_policy_context_hash)
+        block = self.write_ledger(snapshot_frame, fused_vector, meaningful_continuity_raw)
+        return abort_tier, compact_qom_payload, snapshot_frame, block
 
     def ingest_telemetry(self, telemetry_batch: list[NodeTelemetry]) -> EnvironmentVector:
         if not telemetry_batch:
@@ -587,10 +638,7 @@ class AegisContinuityKernel:
         kappa_map: dict[str, KappaScores],
         environment: EnvironmentVector,
     ) -> float:
-        mean_kappa = statistics.fmean(kappa.active for kappa in kappa_map.values()) if kappa_map else 0.0
-        vector_norm = clamp(math.sqrt(sum(axis * axis for axis in fused_vector)))
-        weather_quality = 1.0 - environment.severity()
-        return clamp((0.45 * mean_kappa) + (0.35 * vector_norm) + (0.20 * weather_quality))
+        return calculate_q_conf_score(fused_vector, [kappa.active for kappa in kappa_map.values()], environment.severity())
 
     def calculate_kappa_vector_mean(self, kappa_map: dict[str, KappaScores]) -> KappaScores:
         if not kappa_map:
@@ -669,15 +717,15 @@ class AegisContinuityKernel:
         return continuity
 
     def normalize_meaningful_continuity(self, meaningful_continuity_raw: float) -> float:
-        return clamp(meaningful_continuity_raw / max(1e-12, self.config.mc_raw_normalization_target))
+        return normalize_meaningful_continuity_score(meaningful_continuity_raw, self.config.mc_raw_normalization_target)
 
     def resolve_gate_thresholds(self, scenario: str) -> tuple[float, float]:
-        lowered = scenario.lower()
-        if "storm" in lowered:
-            return self.config.storm_mc_norm_success_threshold, self.config.storm_q_conf_success_threshold
-        if any(label in lowered for label in ("attack", "adversarial", "anchor_dispute", "crypto_seal")):
-            return self.config.adversarial_mc_norm_success_threshold, self.config.adversarial_q_conf_success_threshold
-        return self.config.mc_norm_success_threshold, self.config.q_conf_success_threshold
+        return resolve_gate_thresholds_for_scenario(
+            scenario,
+            (self.config.mc_norm_success_threshold, self.config.q_conf_success_threshold),
+            (self.config.storm_mc_norm_success_threshold, self.config.storm_q_conf_success_threshold),
+            (self.config.adversarial_mc_norm_success_threshold, self.config.adversarial_q_conf_success_threshold),
+        )
 
     def evaluate_continuity_gate(
         self,
@@ -882,15 +930,18 @@ class AegisContinuityKernel:
         else:
             self.recovery_validation_remaining = self.config.recovery_validation_cycles
 
-    def build_hardware_register_target(self, environment: EnvironmentVector) -> dict[str, object]:
+    def build_hardware_register_model(self, environment: EnvironmentVector) -> dict[str, object]:
+        """Return a documentation-only software register-map model, not deployed RTL."""
         gate_open = not bool(
             self.governance_mask
             & (GovernanceState.HARD_ABORT | GovernanceState.CIRCUIT_ABORT | GovernanceState.CRYPTO_SEAL)
         )
         timing_window_ns = max(20, int((self.config.epoch_seconds * 1_000_000_000) / 1024))
         return {
-            "target": "FPGA_ASIC_REGISTER_ABSTRACTION",
-            "layer": "L1_Q_CHIP_GATEWAY",
+            "target": "SOFTWARE_REGISTER_MAP_PROPOSAL",
+            "layer": "WORKLOAD_CONTROL_PLANE_MODEL",
+            "implementation_status": "conceptual_software_mapping_not_rtl",
+            "claim_boundary": "This is a software-side register-map sketch for future integration review, not synthesized RTL, FPGA firmware, ASIC logic, or hardware control.",
             "gate_open": gate_open,
             "o_quantization_window_ns": timing_window_ns,
             "environment_severity": environment.severity(),
@@ -904,8 +955,14 @@ class AegisContinuityKernel:
                 "0x0014": "CRYO_THERMAL_INDEX",
                 "0x0018": "ENCLAVE_MAILBOX",
             },
-            "verilog_stub": "always_ff @(posedge clk) gate_control <= !hard_abort && !circuit_abort && !crypto_seal;",
+            "verilog_stub": (
+                "// NON-SYNTHESIZABLE DOCUMENTATION STUB ONLY; not validated RTL.\n"
+                "always_ff @(posedge clk) gate_control <= !hard_abort && !circuit_abort && !crypto_seal;"
+            ),
         }
+
+    def build_hardware_register_target(self, environment: EnvironmentVector) -> dict[str, object]:
+        return self.build_hardware_register_model(environment)
 
     def build_secure_enclave_vault(self, block: LedgerBlock) -> dict[str, object]:
         delayed_erasure_pending = bool(
@@ -913,7 +970,8 @@ class AegisContinuityKernel:
             & (GovernanceState.SECURITY_LOCKDOWN | GovernanceState.HARD_ABORT | GovernanceState.CRYPTO_SEAL)
         )
         return {
-            "architecture": "HSM_SECURE_ENCLAVE_MEMORY_VAULT",
+            "architecture": "SOFTWARE_HSM_STYLE_KEY_LINEAGE_MODEL",
+            "implementation_status": "software_simulation_not_secure_enclave_hardware",
             "ratchet": "HKDF_SHA256_BRANCH_ISOLATED",
             "branch_id": self.branch_id,
             "block_hash": block.block_hash,
@@ -946,7 +1004,8 @@ class AegisContinuityKernel:
         else:
             action = "NOMINAL"
         return {
-            "scheduler": "CRYOGENIC_THERMAL_BALANCING",
+            "scheduler": "CRYOGENIC_AWARE_COST_PROXY",
+            "implementation_status": "software_cost_model_not_refrigerator_control",
             "p_therm_mw": thermal_mw,
             "thermal_budget_mw": self.config.cryo_thermal_budget_mw,
             "saturation": clamp(saturation),
@@ -979,13 +1038,34 @@ class AegisContinuityKernel:
         total = max(1e-12, sum(kappas))
         probabilities = [max(1e-12, item / total) for item in kappas]
         entropy_bits = -sum(prob * math.log2(prob) for prob in probabilities)
+        raw_payload = {
+            "epoch": self.epoch,
+            "telemetry": [
+                {
+                    "node_id": item.node_id,
+                    "raw_phase": item.raw_phase,
+                    "phase_velocity": item.phase_velocity,
+                    "phase_acceleration": item.phase_acceleration,
+                    "bloch_vector": item.bloch_vector,
+                    "signal_mu": item.signal_mu,
+                    "environment": asdict(item.environment),
+                    "suspected_attack": item.suspected_attack,
+                    "crypto_valid": item.crypto_valid,
+                    "mission_priority": item.mission_priority,
+                }
+                for item in telemetry_batch
+            ],
+        }
+        ratio, raw_bytes, compact_bytes = compact_payload_compression_ratio(raw_payload, len(compact_qom_payload))
         return {
             "rmse_phase_skew_rad": rmse_phase,
             "packet_transmission_jitter_ns": jitter_ns,
             "shannon_entropy_bound_bits": entropy_bits,
-            "data_compression_ratio": 14.2,
+            "data_compression_ratio": ratio,
+            "data_compression_ratio_method": "raw_telemetry_json_bytes / compact_qom_payload_bytes",
+            "raw_telemetry_payload_bytes": raw_bytes,
             "packet_latency_bound_ms": environment.latency * 50.0,
-            "qom_compact_payload_bytes": len(compact_qom_payload),
+            "qom_compact_payload_bytes": compact_bytes,
         }
 
     def emit_compact_qom_payload(

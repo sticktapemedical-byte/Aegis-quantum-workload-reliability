@@ -65,13 +65,26 @@ def quality_breakdown(records: list[dict], mode_records: list[dict]) -> dict[str
     raw_target_values = [value for row in records for value in target_values(row)]
     accepted_target_values = [value for row in accepted for value in target_values(row)]
     governed_scores = [value for row in accepted for value in governed_values(row)]
+    accepted_result_quality = mean(accepted_target_values)
+    governed_quality_score = mean(governed_scores)
+    total_shots = sum(int(row.get("shots") or 0) for row in mode_records)
+    resource_adjusted_quality = (
+        accepted_result_quality * len(accepted) / total_shots
+        if accepted_result_quality is not None and total_shots > 0
+        else None
+    )
     return {
+        "raw_target_quality": mean(raw_target_values),
+        "accepted_result_quality": accepted_result_quality,
+        "governed_quality_score": governed_quality_score,
+        "resource_adjusted_quality": resource_adjusted_quality,
         "raw_target_quality_mean": mean(raw_target_values),
-        "accepted_target_quality_mean": mean(accepted_target_values),
-        "governed_quality_score_mean": mean(governed_scores),
+        "accepted_target_quality_mean": accepted_result_quality,
+        "governed_quality_score_mean": governed_quality_score,
         "quality_note": (
-            "Do not compare raw_target_quality_mean to governed_quality_score_mean as one metric. "
-            "Raw target quality is measured from GHZ/count data; governed quality is a stricter software score over accepted artifacts."
+            "Do not collapse these fields into one mean quality column. raw_target_quality is measured from GHZ/count data; "
+            "accepted_result_quality is the target quality after gating; governed_quality_score is a stricter software score; "
+            "resource_adjusted_quality is accepted_result_quality weighted by accepted results per tracked shot."
         ),
     }
 

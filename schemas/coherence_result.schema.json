@@ -8,8 +8,9 @@
     "real": {"type": "boolean"},
     "backend": {"type": "string"},
     "arms": {"type": "array"},
-    "selected_arm": {"type": "string"},
-    "selected_t_eff_ms": {"type": "number"},
+    "selected_arm": {"type": ["string", "null"]},
+    "selected_t_eff_ms": {"type": ["number", "null"]},
+    "fit_status": {"type": "string"},
     "claim_boundary": {"type": "string"}
   }
 }

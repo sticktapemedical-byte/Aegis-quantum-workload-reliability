@@ -1,7 +1,7 @@
 {
-  "artifact_sha256": "6e27b3ca2cf76ef10585210b0befa847dfe537884e963e023dac6d45418d6253",
+  "artifact_sha256": "d41291abcd8f5e5005ac7ed5afa55a3bb4c809ff5aa30d278b09c158a4709022",
   "backend": "ibm_marrakesh",
-  "created_utc": "2026-05-29T14:26:59.949226+00:00",
+  "created_utc": "2026-05-30T01:17:07.678595+00:00",
   "job_id": null,
   "merkle_root": "ad11506b92d8e52ccbd01ec5abaa06b86bb54136ed9cfd2c36f3be0119a75ce6",
   "qaoa_best_state_population": 0.9375,

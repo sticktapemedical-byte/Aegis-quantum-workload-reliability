@@ -57,23 +57,31 @@ def build_measured_ghz_circuit(delay_ms: float = 0.0) -> Any:
     return circuit
 
 
-def save_account_from_env(channel: str, overwrite: bool = True) -> dict[str, object]:
+def env_instance() -> str | None:
+    load_dotenv_if_available()
+    value = os.environ.get("IBM_QUANTUM_INSTANCE")
+    return value.strip() if value and value.strip() else None
+
+
+def save_account_from_env(channel: str, instance: str | None = None, overwrite: bool = True) -> dict[str, object]:
     load_dotenv_if_available()
     token = os.environ.get("IBM_QUANTUM_TOKEN")
     if not token:
         raise SystemExit("IBM_QUANTUM_TOKEN is not set. Put it in local .env or set it in your shell.")
+    instance = instance or env_instance()
     qiskit_runtime_service, _, _ = require_runtime()
-    qiskit_runtime_service.save_account(channel=channel, token=token, overwrite=overwrite, set_as_default=True)
-    return {"status": "saved", "channel": channel, "token_loaded_from_env": True}
+    qiskit_runtime_service.save_account(channel=channel, token=token, instance=instance, overwrite=overwrite, set_as_default=True)
+    return {"status": "saved", "channel": channel, "instance_configured": bool(instance), "token_loaded_from_env": True}
 
 
-def select_real_backend(channel: str, backend_name: str | None = None):
+def select_real_backend(channel: str, backend_name: str | None = None, instance: str | None = None):
     qiskit_runtime_service, _, _ = require_runtime()
-    service = qiskit_runtime_service(channel=channel)
+    instance = instance or env_instance()
+    service = qiskit_runtime_service(channel=channel, instance=instance)
     if backend_name:
-        backend = service.backend(backend_name)
+        backend = service.backend(backend_name, instance=instance)
     else:
-        backend = service.least_busy(operational=True, simulator=False, min_num_qubits=4)
+        backend = service.least_busy(operational=True, simulator=False, min_num_qubits=4, instance=instance)
     return service, backend
 
 
@@ -101,9 +109,10 @@ def run_real_hardware_once(
     channel: str = "ibm_quantum_platform",
     backend_name: str | None = None,
     delay_ms: float = 0.0,
+    instance: str | None = None,
 ) -> dict[str, object]:
     _, sampler_cls, generate_preset_pass_manager = require_runtime()
-    _, backend = select_real_backend(channel=channel, backend_name=backend_name)
+    _, backend = select_real_backend(channel=channel, backend_name=backend_name, instance=instance)
     print(f"[AEGIS HARDWARE HANDSHAKE] Connected to real IBM QPU: {backend.name}", flush=True)
     circuit = build_measured_ghz_circuit(delay_ms=delay_ms)
     pass_manager = generate_preset_pass_manager(optimization_level=1, backend=backend)
@@ -191,15 +200,18 @@ def process_counts(
         "qom_compact_payload_hex": cycle.qom_compact_payload_hex,
         "merkle_root": cycle.merkle_root,
         "opte_policy_context_hash": cycle.opte_policy_context_hash,
+        "reviewer_telemetry": cycle.reviewer_telemetry,
     }
 
 
 def main() -> None:
+    load_dotenv_if_available()
     parser = argparse.ArgumentParser(description="Optional IBM Quantum hardware/fake-backend bridge for AEGIS.")
     parser.add_argument("--save-account", action="store_true", help="Save IBM_QUANTUM_TOKEN from local .env or shell.")
     parser.add_argument("--real", action="store_true", help="Submit to real IBM hardware. This may wait in queue.")
     parser.add_argument("--backend", default=None, help="Specific IBM backend name. Defaults to least busy real backend.")
     parser.add_argument("--channel", default=os.environ.get("IBM_QUANTUM_CHANNEL", "ibm_quantum_platform"))
+    parser.add_argument("--instance", default=os.environ.get("IBM_QUANTUM_INSTANCE"), help="Optional IBM Quantum Runtime instance CRN or service name.")
     parser.add_argument("--shots", type=int, default=1024)
     parser.add_argument("--delay-ms", type=float, default=0.0, help="Optional GHZ idle delay after H and before CX cascade.")
     parser.add_argument("--seed", type=int, default=2026)
@@ -207,7 +219,7 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.save_account:
-        print(json.dumps(save_account_from_env(args.channel), indent=2))
+        print(json.dumps(save_account_from_env(args.channel, args.instance), indent=2))
         return
 
     if args.real:
@@ -217,6 +229,7 @@ def main() -> None:
             channel=args.channel,
             backend_name=args.backend,
             delay_ms=args.delay_ms,
+            instance=args.instance,
         )
     else:
         payload = run_fake_backend_once(shots=args.shots, seed=args.seed, delay_ms=args.delay_ms)

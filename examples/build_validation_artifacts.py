@@ -34,6 +34,8 @@ SOURCE_FILES = [
     "ibm_depth_stress_comparison.json",
     "ibm_session_batch_loop_fake_smoke.json",
     "accepted_vs_rejected.json",
+    "accepted_vs_rejected_ibm_marrakesh_2026-05-29.json",
+    "accepted_vs_rejected_ibm_kingston_2026-05-29.json",
     "delay_ramp.json",
     "readout_mitigation_repeat.json",
     "adaptive_probe_then_commit.json",
@@ -138,6 +140,24 @@ def sanitize_payload(source_name: str, payload: dict[str, Any]) -> dict[str, Any
             }
             for record in payload["records"]
         ]
+    if source_name == "delay_ramp.json":
+        sanitized["status"] = (
+            "inconclusive_expected_degradation_not_observed"
+            if payload.get("monotonic_ghz_down") is False
+            else "degradation_observed"
+        )
+        sanitized["interpretation"] = "Delay-ramp degradation detection: inconclusive / expected degradation not observed."
+    if source_name == "adaptive_coherence_controller.json":
+        selected_t_eff = payload.get("selected_t_eff_ms")
+        if selected_t_eff is not None and float(selected_t_eff) >= 999000:
+            selected_t_eff = None
+        sanitized["selected_t_eff_ms"] = selected_t_eff
+        sanitized["fit_status"] = payload.get("fit_status") or ("no_valid_decay_fit" if selected_t_eff is None else "valid_decay_fit")
+        sanitized["interpretation"] = (
+            "No reliable T_eff extracted from this run."
+            if selected_t_eff is None
+            else "T_eff fit extracted from returned-output survival curve."
+        )
     if "arms" in payload:
         arms = []
         for record in payload["arms"]:
@@ -153,6 +173,10 @@ def sanitize_payload(source_name: str, payload: dict[str, Any]) -> dict[str, Any
                 "sequence": record.get("sequence"),
                 "status": record.get("status"),
                 "survival": record.get("survival"),
+                "fit": {
+                    **(record.get("fit") or {}),
+                    **({"t_eff_ms": None, "valid": False, "fit_status": "no_valid_decay_fit"} if (record.get("fit") or {}).get("t_eff_ms") and float((record.get("fit") or {}).get("t_eff_ms")) >= 999000 else {}),
+                } if record.get("fit") else None,
                 "shots": record.get("shots"),
                 "survival_wilson_95": {"low": ci.low, "high": ci.high} if ci else None,
                 "selected": selected_by_sequence or selected_by_arm,

@@ -2,6 +2,13 @@
   "arms_summary": [
     {
       "arm": "aegis_selected_delay_ramp",
+      "fit": {
+        "fit_status": "no_valid_decay_fit",
+        "intercept": -0.04735316577056434,
+        "slope": 0.0024638305130248784,
+        "t_eff_ms": null,
+        "valid": false
+      },
       "job_id": null,
       "selected": true,
       "sequence": null,
@@ -11,14 +18,17 @@
       "survival_wilson_95": null
     }
   ],
-  "artifact_sha256": "46a589abd1c7eab83c4cc30cb774ae0c20f5a0acc779bad76d98d9c0a7dd67ed",
+  "artifact_sha256": "3975d9ea98b8a75055a7d20912e17425f709db1f3b1813334ea3afd6a1dc831f",
   "backend": "ibm_marrakesh",
-  "created_utc": "2026-05-29T14:26:59.949226+00:00",
+  "created_utc": "2026-05-30T01:17:07.678595+00:00",
+  "fit_status": "no_valid_decay_fit",
+  "interpretation": "No reliable T_eff extracted from this run.",
   "job_id": null,
   "merkle_root": null,
   "qom_compact_payload_bits": null,
   "qom_compact_payload_hex": null,
   "round_trip_seconds": null,
+  "selected_t_eff_ms": null,
   "shots": null,
   "source": "aegis_adaptive_coherence_controller",
   "source_file": "adaptive_coherence_controller.json"

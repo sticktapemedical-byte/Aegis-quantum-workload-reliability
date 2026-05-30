@@ -23,4 +23,5 @@ def test_pulse_policy_defers_when_unsafe():
     safe = pulse_policy(0.2, 2.0, 0.8, 0.6)
     unsafe = pulse_policy(0.99, 2.0, 0.8, 0.6)
     assert safe["pulse_policy"] == "ALLOW_TUNED_PULSE_PROFILE"
+    assert safe["access_limited"] is True
     assert unsafe["pulse_policy"] == "DEFER_TO_SAFE_DIGITAL_GATES"

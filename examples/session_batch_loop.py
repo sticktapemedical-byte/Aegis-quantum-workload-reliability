@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -150,6 +151,18 @@ def run_real_job_batch_loop(
             f"q_conf={payload['q_conf']:.4f} gate={payload['continuity_gate_passed']}",
             flush=True,
         )
+        checkpoint = os.environ.get("AEGIS_BATCH_CHECKPOINT")
+        if checkpoint:
+            partial = summarize_records(
+                source="ibm_real_job_batch_loop_partial",
+                backend=backend_name,
+                session_id="session_unavailable_job_fallback",
+                records=records,
+                elapsed_seconds=time.perf_counter() - started,
+            )
+            partial["checkpoint_complete"] = len(records) == batches
+            partial["checkpoint_batches_requested"] = batches
+            Path(checkpoint).write_text(json.dumps(partial, indent=2, sort_keys=True), encoding="utf-8")
     summary = summarize_records(
         source="ibm_real_job_batch_loop",
         backend=backend_name,

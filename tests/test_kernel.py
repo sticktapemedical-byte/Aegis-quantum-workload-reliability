@@ -33,6 +33,8 @@ def test_crypto_invalidation_closes_hardware_gate_and_sets_crypto_seal() -> None
     assert result.governance_mask & GovernanceState.CRYPTO_SEAL
     assert not result.continuity_gate_passed
     assert result.hardware_register_target["gate_open"] is False
+    assert result.hardware_register_target["implementation_status"] == "conceptual_software_mapping_not_rtl"
+    assert "NON-SYNTHESIZABLE" in result.hardware_register_target["verilog_stub"]
     assert result.unsafe_output_prevented is True
 
 

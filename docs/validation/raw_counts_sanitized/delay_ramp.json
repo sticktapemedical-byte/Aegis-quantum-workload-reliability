@@ -1,7 +1,8 @@
 {
-  "artifact_sha256": "0794a3a6e9a6babff5b35cd6fed882ff4991aa43f263a28ec73b6f7766621f65",
+  "artifact_sha256": "9bd44396e04c38fa376a7497c5eca1ab13b3fdff9bab3fbde73202f05634a436",
   "backend": "ibm_marrakesh",
-  "created_utc": "2026-05-29T14:26:59.949226+00:00",
+  "created_utc": "2026-05-30T01:17:07.678595+00:00",
+  "interpretation": "Delay-ramp degradation detection: inconclusive / expected degradation not observed.",
   "job_id": null,
   "merkle_root": "73421513bc062d21f13114c9247f962c5f2c046523c15e53746e4c99846bd89c",
   "qom_compact_payload_bits": 176,
@@ -55,5 +56,6 @@
   "round_trip_seconds": null,
   "shots": null,
   "source": "aegis_delay_ramp_degradation_detection",
-  "source_file": "delay_ramp.json"
+  "source_file": "delay_ramp.json",
+  "status": "inconclusive_expected_degradation_not_observed"
 }

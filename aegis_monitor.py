@@ -58,8 +58,8 @@ def build_monitor_payload(cycles: int = 1000, seed: int = 2026) -> dict[str, obj
             "qom": "Quantum Orchestration Middleware / Mesh control-plane frame",
             "opte": "Operational Proxy Transfer Engine with policy context hash embedded in .QOM frame",
             "hardware_register_target": "FPGA/ASIC register abstraction for Layer 1 G(t) boundary gating",
-            "secure_enclave_vault": "HSM-style isolated branch-key ratchet and delayed-erasure buffer model",
-            "cryogenic_scheduler": "milli-watt thermal load balancing model for cryogenic-aware execution",
+            "secure_enclave_vault": "software HSM-style key-lineage model; not hardware enclave execution",
+            "cryogenic_scheduler": "cryogenic-aware cost proxy; not refrigerator or cryogenic hardware control",
             "pipeline": [
                 "INGEST_TELEMETRY",
                 "RECOMPUTE_KAPPA_VECTOR",
@@ -1450,14 +1450,14 @@ function render(data) {
     <div class="mono">${Object.entries(hw.address_map).map(([k,v]) => `${k}=${v}`).join("<br>")}</div>
     <div class="mono">${hw.verilog_stub}</div>`;
   el("enclave").innerHTML = `
-    <div><h3>${enclave.architecture}</h3><div>${data.scope.secure_enclave_vault}</div></div>
+    <div><h3>${enclave.architecture}</h3><div>${data.scope.secure_enclave_vault}</div><div>${enclave.implementation_status || ""}</div></div>
     <div>ratchet: <b>${enclave.ratchet}</b></div>
     <div>branch: <b>${enclave.branch_id}</b></div>
     <div>delayed erasure pending: <b class="${enclave.delayed_erasure_pending ? "warn" : "ok"}">${enclave.delayed_erasure_pending}</b></div>
     <div>key fingerprint: <span class="mono">${enclave.active_key_fingerprint}</span></div>
     <div>${enclave.isolated_register_banks.map(x => `<span class="pill">${x}</span>`).join("")}</div>`;
   el("physical").innerHTML = `
-    <div><h3>${cryo.scheduler}</h3><div>${data.scope.cryogenic_scheduler}</div></div>
+    <div><h3>${cryo.scheduler}</h3><div>${data.scope.cryogenic_scheduler}</div><div>${cryo.implementation_status || ""}</div></div>
     <div>P_therm ${fmt(cryo.p_therm_mw, 4)} mW / budget ${fmt(cryo.thermal_budget_mw, 2)} mW ${bar(cryo.saturation, false)}</div>
     <div>action: <b>${cryo.action}</b></div>
     <div><h3>Reviewer Telemetry</h3></div>

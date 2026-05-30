@@ -1,10 +1,10 @@
 {
-  "aegis_commit_hash": "67d5fec7d571ff58f523b1341598be81aae2a269",
-  "artifact_count": 32,
+  "aegis_commit_hash": "7be7a7ac3fbc0856ac71ba032234ec638b73caf6",
+  "artifact_count": 34,
   "artifacts": [
     {
       "artifact": "docs/validation/raw_counts_sanitized/ibm_bridge_result.json",
-      "artifact_sha256": "7a0bdeb9943593a0a77afd828bb7046b9b550629af43525234c4500fd3158235",
+      "artifact_sha256": "67fd65cb7e221b0b333fbdbc6865000e0964f92543ad307c0f6d18876d8338f0",
       "backend": "ibm_marrakesh",
       "job_id": "d8cf0vr8ch0s738uppq0",
       "shots": 1024,
@@ -12,7 +12,7 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/ibm_marrakesh_512.json",
-      "artifact_sha256": "73d088c86e8438c60c1ef3d7d9502dae90b286b4f9a2318fd76eb986791e8fcb",
+      "artifact_sha256": "caa664b514b0ae403285efc13c1dd8c21cff8d53d8eef79f1d3b4693a06c4287",
       "backend": "ibm_marrakesh",
       "job_id": "d8cf7cj8ch0s738uq3qg",
       "shots": 512,
@@ -20,7 +20,7 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/ibm_marrakesh_4096_ghz.json",
-      "artifact_sha256": "243183238433ae259bf402fb5aac3e4102cb2e49642d943615693ea7f9ba8f93",
+      "artifact_sha256": "136d2de3e3bc0905b5ad50f56869e8b1854465fa380f12165de3a995e9da5cec",
       "backend": "ibm_marrakesh",
       "job_id": "d8cfjoijki0s73ar75bg",
       "shots": 4096,
@@ -28,7 +28,7 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/ibm_marrakesh_128_delay.json",
-      "artifact_sha256": "a674a72c6f5ea32cce6bf5246262c054cb8a481a2c95fec8729870d50c853bea",
+      "artifact_sha256": "588e5617ed7817be8d7667703c74bf7b5c46cf171801e71f8f57894beeaae1fe",
       "backend": "ibm_marrakesh",
       "job_id": "d8cf7n47avuc73dqtus0",
       "shots": 128,
@@ -36,7 +36,7 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/ibm_kingston_256.json",
-      "artifact_sha256": "42b71e6d980a6a53e0aabfa82e73f768a22dfb9d45b777db956bd8bf53c973e5",
+      "artifact_sha256": "3a754d815ed41db3ca70e0f7c15708c44e6d8b25c7230c3d933213e8b1fd01ce",
       "backend": "ibm_kingston",
       "job_id": "d8cf7r2jki0s73ar6gv0",
       "shots": 256,
@@ -44,7 +44,7 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/ibm_fez_256.json",
-      "artifact_sha256": "f2d59a782abfdc66945d570c66f299288ebca13dc8b58eca3fb6c21147ab0553",
+      "artifact_sha256": "6faec6605b7c320723fe287b08e81e9364cab06fee8f079b2f716957b2789525",
       "backend": "ibm_fez",
       "job_id": "d8cf8n38ch0s738uq6vg",
       "shots": 256,
@@ -52,7 +52,7 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/ibm_fast_coherence_marrakesh.json",
-      "artifact_sha256": "ab5e65ffa0a823c747bdfb224669320a9c9b119920534eac1d4a3287362eae59",
+      "artifact_sha256": "51482518fe21e1a1ccd1cf2cf3a064aafdb8ff7c7bafa5834fcf9d8ad14cae65",
       "backend": "ibm_marrakesh",
       "job_id": "d8cfb5j8ch0s738uqcd0",
       "shots": 256,
@@ -60,7 +60,7 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/ibm_long_form_marrakesh.json",
-      "artifact_sha256": "db1f8eeb1d25d3ac584eb406530a0e11f4cf7b9ea42e4c645bf180f9e76900bc",
+      "artifact_sha256": "2fc790110960bfffff984b0fdf796b4e3d009a717ebf8c4a35434ec0164328e0",
       "backend": "ibm_marrakesh",
       "job_id": "d8cfc8ijki0s73ar6ri0",
       "shots": 1280,
@@ -68,7 +68,7 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/ibm_long_form_marrakesh_setpoint.json",
-      "artifact_sha256": "8f5d43bf2eac424522accea8ac25cb433a014ac186d85e52b15a6a7dc784324a",
+      "artifact_sha256": "a530ac0e48c1dca98934131ce4522e0d27a8ac7f1a799f1e761a78fe94121af3",
       "backend": "ibm_marrakesh",
       "job_id": "d8cfd4ijki0s73ar6tkg",
       "shots": 640,
@@ -76,7 +76,7 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/ibm_long_form_marrakesh_setpoint_256.json",
-      "artifact_sha256": "260f9df37357e54fa77114c78a8386ea3b758f4f7517bd003589f15e7b0b06fa",
+      "artifact_sha256": "bc88f18602bd9f34ed84bf16065a238b9124d38406af9e6ad56fec23e09acdbc",
       "backend": "ibm_marrakesh",
       "job_id": "d8cfdvqjki0s73ar6uog",
       "shots": 1280,
@@ -84,7 +84,7 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/ibm_long_form_marrakesh_setpoint_1024.json",
-      "artifact_sha256": "49601aa72dc9bcbcdba1bf86ce643af68db5e0025861644848428eaaacbb5789",
+      "artifact_sha256": "12ad44fa6cdb6029a3490725ec61c8347de2ea8cf7f1506616c03d7f2fb98a5e",
       "backend": "ibm_marrakesh",
       "job_id": "d8cfk538amns73bjg5gg",
       "shots": 5120,
@@ -92,7 +92,7 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/ibm_readout_mitigation_comparison.json",
-      "artifact_sha256": "a5c47e4cc05bd725002e35b9f08dd010e86c2bdcfc847b30703675aedeafd0bb",
+      "artifact_sha256": "e3f65b4875d5c9d70628d2f3750a6e26094073279d8235202fd2ffa5fa08bb1b",
       "backend": "ibm_marrakesh",
       "job_id": "d8cfma2jki0s73ar78a0",
       "shots": 3072,
@@ -100,7 +100,7 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/ibm_vqe_bridge.json",
-      "artifact_sha256": "5c31e6b4fa14b90735d8d43541197187fbd2a87a8db0e99e999661a2c6cb458f",
+      "artifact_sha256": "14600b8ada92b42c9ad62009db468a1b10a65455969e41b6440c029658fa280d",
       "backend": "ibm_marrakesh",
       "job_id": "d8cfmgs7avuc73dqumgg",
       "shots": 3072,
@@ -108,7 +108,7 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/ibm_vqe_bridge_setpoint.json",
-      "artifact_sha256": "98fe8e70ea10184c4ea5cfe435dbffd3de63885bb20fe36d5b143e8f2658d6ab",
+      "artifact_sha256": "3c47996ff46198e61247a74de38e3588b5032f66b7fed7951006f295423f210b",
       "backend": "ibm_marrakesh",
       "job_id": "d8cfn0qjki0s73ar7990",
       "shots": 3072,
@@ -116,7 +116,7 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/ibm_depth_stress_comparison.json",
-      "artifact_sha256": "72be795f485dc9cdf0cd131f41be506bde77180b73850d887a51eecf7a7a2696",
+      "artifact_sha256": "121508be61217a76283ba296a6e33fc94b39d7312f1bfde6677e6ca8aa3b5c2b",
       "backend": "ibm_marrakesh",
       "job_id": "d8cfn9j8amns73bjg950",
       "shots": 1536,
@@ -124,7 +124,7 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/ibm_session_batch_loop_fake_smoke.json",
-      "artifact_sha256": "d4da9888b1037cd984527185e9e505bbb44eebd3e6cd47ae140b20f3de10db65",
+      "artifact_sha256": "e6716dfb0f6ccfaf48e624681c6c681d19f83857c3b6c301350cd10a470f8296",
       "backend": "fake_osaka",
       "job_id": null,
       "shots": 384,
@@ -132,15 +132,31 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/accepted_vs_rejected.json",
-      "artifact_sha256": "9c50ae7b9240b898b2d7c91b19e44de6dcae908dee182dbba077dfd218f99df9",
+      "artifact_sha256": "9e28188056ce5a3139f68c85dbb1299a19b2e80ac6edc73942925ad798adce48",
       "backend": "ibm_marrakesh",
       "job_id": null,
       "shots": 7680,
       "source_file": "accepted_vs_rejected.json"
     },
     {
+      "artifact": "docs/validation/raw_counts_sanitized/accepted_vs_rejected_ibm_marrakesh_2026-05-29.json",
+      "artifact_sha256": "2b3e7226c2ddce965ad9171a2421adaa435bc7b72d4a40268bb9ddda5184c829",
+      "backend": "ibm_marrakesh",
+      "job_id": null,
+      "shots": 7680,
+      "source_file": "accepted_vs_rejected_ibm_marrakesh_2026-05-29.json"
+    },
+    {
+      "artifact": "docs/validation/raw_counts_sanitized/accepted_vs_rejected_ibm_kingston_2026-05-29.json",
+      "artifact_sha256": "be3b651d1889fcabca8f28a5738633475606a54545d2fe60d8e05164a9c18cd2",
+      "backend": "ibm_kingston",
+      "job_id": null,
+      "shots": 7680,
+      "source_file": "accepted_vs_rejected_ibm_kingston_2026-05-29.json"
+    },
+    {
       "artifact": "docs/validation/raw_counts_sanitized/delay_ramp.json",
-      "artifact_sha256": "0794a3a6e9a6babff5b35cd6fed882ff4991aa43f263a28ec73b6f7766621f65",
+      "artifact_sha256": "9bd44396e04c38fa376a7497c5eca1ab13b3fdff9bab3fbde73202f05634a436",
       "backend": "ibm_marrakesh",
       "job_id": null,
       "shots": null,
@@ -148,7 +164,7 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/readout_mitigation_repeat.json",
-      "artifact_sha256": "a4b67669b431711b5c3c29f5ed637d55d6d1d7a0ccb4a7adc47f5374076008b0",
+      "artifact_sha256": "80edbd4120c532aaae30a412fcfaf86c2e3cc5a956ca8cf0ac4d03afbc95df96",
       "backend": "ibm_marrakesh",
       "job_id": null,
       "shots": 30720,
@@ -156,7 +172,7 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/adaptive_probe_then_commit.json",
-      "artifact_sha256": "5a70442f7f8c85f69ce995e06895cdd13472ae0cb20ac50d9e0f5a98fbef557b",
+      "artifact_sha256": "865d59f92a6686b43acc47e2bf68c886decded1b7dc2b49cf21c9f93a413cced",
       "backend": "ibm_marrakesh",
       "job_id": "d8cl0os7avuc73dr5i40",
       "shots": 1024,
@@ -164,7 +180,7 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/adaptive_backend_selector.json",
-      "artifact_sha256": "b28b35b5ef227cdbe6572401dcb094418267b46b56a914c2b148e035bfe5bcdf",
+      "artifact_sha256": "1f509b7092069cf0322c45bc7412a8d1073758aab892ae4bc6735c4ca85b0094",
       "backend": "ibm_marrakesh",
       "job_id": "d8cl1n47avuc73dr5j3g",
       "shots": 1024,
@@ -172,7 +188,7 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/adaptive_layout_selector.json",
-      "artifact_sha256": "d89966e818bea78a6f8c3c94ee4a417a73d4d6300be8a5ff22de00e9c78cb993",
+      "artifact_sha256": "cb99992a6cb24c158a885fa67aeaad5c921782cdb0ebd3656344b62e511c14fc",
       "backend": "ibm_marrakesh",
       "job_id": "d8cl2ib8ch0s738v1o0g",
       "shots": 1024,
@@ -180,7 +196,7 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/adaptive_mitigation_selector.json",
-      "artifact_sha256": "cd63f6ba95edab0e4bae02d3df143d80a49c895f5544020109660c556c745550",
+      "artifact_sha256": "dcc689619b76972921d5a676b6207162fb50f38ceb38272f54b76415ffb5d2c4",
       "backend": "ibm_marrakesh",
       "job_id": "d8cl3cj8amns73bjn5vg",
       "shots": 3072,
@@ -188,7 +204,7 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/adaptive_coherence_controller.json",
-      "artifact_sha256": "46a589abd1c7eab83c4cc30cb774ae0c20f5a0acc779bad76d98d9c0a7dd67ed",
+      "artifact_sha256": "3975d9ea98b8a75055a7d20912e17425f709db1f3b1813334ea3afd6a1dc831f",
       "backend": "ibm_marrakesh",
       "job_id": null,
       "shots": null,
@@ -196,7 +212,7 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/dynamical_decoupling_insertion.json",
-      "artifact_sha256": "83c6217fa1b31557230d04d259ec85160f9936b5408d1febf5087635e4aeca6a",
+      "artifact_sha256": "55607e075a77e5d62e61361156a62d7f8fc5b9023bc7fec9273edfd6a6b7661b",
       "backend": "ibm_marrakesh",
       "job_id": "d8cl4a47avuc73dr5mq0",
       "shots": 512,
@@ -204,7 +220,7 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/dynamic_circuit_governance.json",
-      "artifact_sha256": "a5a2af23c032bd78dd5b651507c59af6b723b2b917262c0d81718643aa250ff4",
+      "artifact_sha256": "072be52806b9f7b577224e32d5a866e10d5a0d7698a5ded51afb3fcbebf37d6a",
       "backend": "ibm_marrakesh",
       "job_id": "d8cl4lj8ch0s738v1ql0",
       "shots": 256,
@@ -212,7 +228,7 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/calibration_campaign.json",
-      "artifact_sha256": "530b63810e4a7d0a29f9ef1212ad1b05d7d146ab059118b01fde47b27a3968fc",
+      "artifact_sha256": "b01c35d1400d0f7710f65e99066320774e0516c6b687525b1ba3fc7e15982ff0",
       "backend": "ibm_marrakesh",
       "job_id": null,
       "shots": null,
@@ -220,7 +236,7 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/pulse_level_controls.json",
-      "artifact_sha256": "e892a52e6b2d1152285736b8827c099a6e1e2339d383280d650495d27c21c246",
+      "artifact_sha256": "7532dbdb10d693877fe9012d2e42caa9adc3ef63dc9bdbe784f8b2fc2472c32a",
       "backend": null,
       "job_id": null,
       "shots": null,
@@ -228,7 +244,7 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/dd_repeat_campaign.json",
-      "artifact_sha256": "f2645daf9a0b366289eb268c19f45ca141d7faf4c9cff6bff97dc49c58cad018",
+      "artifact_sha256": "1fb03cf132feb4ec949d4a9365ec01b271b48ecbd02db2960d34c4efaaac68b6",
       "backend": "ibm_marrakesh",
       "job_id": null,
       "shots": null,
@@ -236,7 +252,7 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/qaoa_bridge.json",
-      "artifact_sha256": "6e27b3ca2cf76ef10585210b0befa847dfe537884e963e023dac6d45418d6253",
+      "artifact_sha256": "d41291abcd8f5e5005ac7ed5afa55a3bb4c809ff5aa30d278b09c158a4709022",
       "backend": "ibm_marrakesh",
       "job_id": null,
       "shots": 64,
@@ -244,7 +260,7 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/negative_regression_suite.json",
-      "artifact_sha256": "e2f010a3e3cc06d24313f41da89327251e7c6248e6004a420df4dea7e9b1880c",
+      "artifact_sha256": "7898bcf9276f5348341ba8e671054d77c098cf5930efc058988cb82c7582c096",
       "backend": null,
       "job_id": null,
       "shots": 64,
@@ -252,14 +268,14 @@
     },
     {
       "artifact": "docs/validation/raw_counts_sanitized/ibm_maintenance_blocked_campaign.json",
-      "artifact_sha256": "df0a9adacfb98c47e63d4b857b09989afd29c1e52d8d3890263e4907dbecacb8",
+      "artifact_sha256": "b593a2148a3ee73c9a85247a35070d367dc2869b39073402fb44a097f5a5c50b",
       "backend": null,
       "job_id": null,
       "shots": null,
       "source_file": "ibm_maintenance_blocked_campaign.json"
     }
   ],
-  "created_utc": "2026-05-29T14:26:59.949226+00:00",
+  "created_utc": "2026-05-30T01:17:07.678595+00:00",
   "manifest_type": "aegis_sanitized_ibm_validation_manifest",
   "python_version": "3.12.10",
   "qiskit_ibm_runtime_version": "0.47.0",

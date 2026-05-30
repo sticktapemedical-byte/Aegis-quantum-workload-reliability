@@ -15,7 +15,7 @@ This campaign measures returned-output governance, adaptive workload selection, 
 | Adaptive backend selector | `ibm_marrakesh`, `ibm_kingston` | 3 | 1,536 | Selected `ibm_marrakesh`; committed GHZ `95.70%`; `ibm_kingston` probe continuity failed at `87.11%` GHZ. |
 | Adaptive layout selector | `ibm_marrakesh` | 1 | 1,024 | Selected layout `[4, 5, 6, 7]`; committed GHZ `94.24%`; continuity passed. |
 | Adaptive mitigation selector | `ibm_marrakesh` | 1 | 3,072 | Selected `readout_mitigation`; raw GHZ `95.12%`; mitigated GHZ `96.68%`; uplift `+1.57 pp`. |
-| Adaptive coherence controller | `ibm_marrakesh` | 4 | 2,048 | Real delay-ramp jobs completed; no measurable decay fit observed. The capped sentinel is treated as an invalid/no-decay fit, not a physical lifetime estimate. |
+| Adaptive coherence controller | `ibm_marrakesh` | 4 | 2,048 | Real delay-ramp jobs completed; no measurable decay fit observed. `T_eff` is treated as null/no-valid-fit when no negative decay slope is present, not as a physical lifetime estimate. |
 | Dynamical decoupling insertion harness | `ibm_marrakesh` | 4 | 2,048 | Real idle echo/DD-style arms completed. Survival: none `33.59%`, `xx` `67.77%`, `xy4` `70.12%`, `cpmg` `65.82%`; selected `xy4`. |
 | Dynamic-circuit governance | `ibm_marrakesh` | 1 | 256 | Real dynamic-circuit job completed. Counts: `00=118`, `11=138`. |
 
@@ -30,7 +30,7 @@ This campaign measures returned-output governance, adaptive workload selection, 
 
 - IBM Runtime Sessions are not available on the current open plan. The session-batch code fell back to normal job mode and recorded the fallback reason.
 - `ibm_fez` had a high queue and one probe job was cancelled by IBM. The adaptive scripts were hardened to record failed probes and continue with successful backends.
-- The delay-ramp and coherence-controller runs did not expose monotonic decay under the tested compiled delay path. These should be presented as negative/inconclusive for degradation detection, not as coherence improvement.
+- The delay-ramp and coherence-controller runs did not expose monotonic decay under the tested compiled delay path. These should be presented as negative/inconclusive for degradation detection, with null `T_eff` when the fit is invalid, not as coherence improvement.
 - The strongest positive results from this campaign are the accepted-vs-rejected split, readout mitigation repeat uplift, backend selection favoring `ibm_marrakesh`, dynamic-circuit execution, and DD-style idle echo arm comparison.
 - The DD-style result is a single workload/run comparison. It supports that the harness can compare control-policy candidates, not that AEGIS improves intrinsic coherence.
 - The ablation workflow now separates raw target quality from governed software score so raw-only and full-AEGIS modes are not compared through one overloaded metric.
@@ -57,4 +57,8 @@ See:
 - `docs/validation/efficiency_summary.json`
 - `docs/validation/blind_holdout.json`
 - `docs/validation/ablation_workflow.json`
+
+## Follow-Up
+
+See `docs/validation/AEGIS_Test_A_Three_Backend_Followup_2026-05-29.md` for the later Marrakesh/Kingston accepted-vs-rejected repeat and the deferred Fez investigation.
 - `docs/validation/reports/validation_summary.md`

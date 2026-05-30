@@ -2,6 +2,7 @@
   "arms_summary": [
     {
       "arm": null,
+      "fit": null,
       "job_id": "d8cl43qjki0s73are790",
       "selected": false,
       "sequence": "none",
@@ -15,6 +16,7 @@
     },
     {
       "arm": null,
+      "fit": null,
       "job_id": "d8cl472jki0s73are7e0",
       "selected": false,
       "sequence": "xx",
@@ -28,6 +30,7 @@
     },
     {
       "arm": null,
+      "fit": null,
       "job_id": "d8cl4a47avuc73dr5mq0",
       "selected": true,
       "sequence": "xy4",
@@ -41,6 +44,7 @@
     },
     {
       "arm": null,
+      "fit": null,
       "job_id": "d8cl4d2jki0s73are7lg",
       "selected": false,
       "sequence": "cpmg",
@@ -53,9 +57,9 @@
       }
     }
   ],
-  "artifact_sha256": "83c6217fa1b31557230d04d259ec85160f9936b5408d1febf5087635e4aeca6a",
+  "artifact_sha256": "55607e075a77e5d62e61361156a62d7f8fc5b9023bc7fec9273edfd6a6b7661b",
   "backend": "ibm_marrakesh",
-  "created_utc": "2026-05-29T14:26:59.949226+00:00",
+  "created_utc": "2026-05-30T01:17:07.678595+00:00",
   "job_id": "d8cl4a47avuc73dr5mq0",
   "merkle_root": "6b90e9d943955ce4a44c60f17d8fde7cfab14c680f225f16dd6c22d7d9e24b4d",
   "qom_compact_payload_bits": 176,

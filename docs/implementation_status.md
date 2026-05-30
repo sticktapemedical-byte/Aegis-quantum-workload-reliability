@@ -22,6 +22,9 @@ This table separates implemented code, simulated harnesses, real IBM Cloud requi
 | Dynamic-circuit governance | Implemented where IBM backend supports dynamic circuits | `examples/dynamic_circuit_governance.py`, real `ibm_marrakesh` result |
 | RB/T1/T2/tomography campaign | Harness implemented; real campaign not queued by default | `examples/calibration_campaign.py` |
 | Pulse-level controls | Policy register implemented; public IBM pulse access not claimed | `examples/pulse_level_controls.py` |
+| Hardware register target / Verilog-like stub | Conceptual software mapping only; not RTL or firmware | `aegis_kernel.py`, README terminology table |
+| Cryogenic scheduler wording | Software cost proxy only; not refrigerator control | `aegis_kernel.py`, `aegis_monitor.py` |
+| Secure enclave vault wording | Software HSM-style key-lineage model only; not certified enclave hardware | `aegis_kernel.py`, `aegis_monitor.py` |
 | Efficiency metrics | Implemented | `aegis_efficiency.py`, `examples/efficiency_report.py` |
 | Blind holdout workflow | Implemented | `examples/blind_holdout.py`, `docs/validation/blind_holdout.json` |
 | Ablation workflow | Implemented | `examples/ablation_workflow.py`, `docs/validation/ablation_workflow.json` |
@@ -29,4 +32,4 @@ This table separates implemented code, simulated harnesses, real IBM Cloud requi
 | Publication checklist | Implemented | `docs/publication_checklist.md` |
 | Target claim stage | Not earned as a broad claim | Requires controlled baseline comparisons, larger repeats, backend calibration snapshots, and successful holdout/ablation evidence |
 | Partner-level hardware integration | Not currently supported | Would require hardware telemetry or vendor/partner access beyond public IBM Runtime |
-
+| Community/market validation | Early-stage / limited public traction | Repository evidence should be framed as technical validation, not adoption proof |

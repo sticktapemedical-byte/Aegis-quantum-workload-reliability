@@ -35,7 +35,7 @@ def main() -> None:
     parser.add_argument("--real", action="store_true")
     parser.add_argument("--backend", default="ibm_marrakesh")
     parser.add_argument("--channel", default="ibm_quantum_platform")
-    parser.add_argument("--shots", type=int, default=256)
+    parser.add_argument("--shots", type=int, default=1024)
     parser.add_argument("--output", type=Path, default=Path("dynamic_circuit_governance.json"))
     args = parser.parse_args()
     if not args.real:
@@ -65,9 +65,10 @@ def main() -> None:
                 "real": True,
                 "backend": args.backend,
                 "status": "unsupported_or_failed",
+                "access_limited": True,
                 "error": str(exc),
             }
-    payload["claim_boundary"] = "Uses hardware-supported dynamic circuits only if available; otherwise reports unsupported without claiming real-time control."
+    payload["claim_boundary"] = "Uses hardware-supported dynamic circuits only if available; otherwise reports unsupported/access-limited without claiming real-time control."
     args.output.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
     print(json.dumps(payload, indent=2, sort_keys=True))
 

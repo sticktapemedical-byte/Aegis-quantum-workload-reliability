@@ -16,6 +16,7 @@ def pulse_policy(omega_drive: float, zne_lambda: float, eta_eff: float, thermal_
         "eta_eff": bounded_eta,
         "thermal_headroom": thermal_headroom,
         "pulse_policy": "ALLOW_TUNED_PULSE_PROFILE" if safe else "DEFER_TO_SAFE_DIGITAL_GATES",
+        "access_limited": True,
         "zne_enabled": bounded_zne > 1.0,
         "measurement_strength": "attenuated" if bounded_eta < 0.5 else "normal",
         "claim_boundary": "Policy register only; public IBM backends generally do not expose arbitrary pulse-level control.",

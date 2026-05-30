@@ -10,9 +10,10 @@ Recommended local token setup:
 
 1. Copy `.env.example` to `.env`.
 2. Put your token in `.env` as `IBM_QUANTUM_TOKEN=...`.
-3. Run `python examples/ibm_bridge.py --save-account`.
+3. If IBM Quantum shows an instance CRN or service name, put it in `.env` as `IBM_QUANTUM_INSTANCE=...`.
+4. Run `python examples/ibm_bridge.py --save-account`.
 
-The save step reads the token from local environment storage and calls `QiskitRuntimeService.save_account(...)`.
+The save step reads the token and optional instance from local environment storage and calls `QiskitRuntimeService.save_account(...)`.
 
 ## Install Optional Dependencies
 

@@ -55,10 +55,10 @@ def pct(value: Any) -> str:
 
 
 def fit_value(value: Any) -> str:
+    if value is None:
+        return "no valid fit"
     try:
         value = float(value)
-        if value >= 999000:
-            return "no decay fit"
         return f"{value:,.2f}"
     except Exception:
         return "-"
@@ -162,7 +162,7 @@ def campaign_sections(root: Path, story: list[Any], styles) -> None:
         if name == "delay_ramp.json":
             story.append(p("Interpretation: this run is preserved as a negative/inconclusive result. The tested delay path did not produce monotonic degradation, so it should not be used as degradation-detection proof.", styles["BodyText"]))
         if name == "adaptive_coherence_controller.json":
-            story.append(p("Interpretation: the controller emitted a capped sentinel because the returned outputs did not expose a meaningful decay curve. Treat this as no valid T_eff fit, not as a physical lifetime estimate.", styles["BodyText"]))
+            story.append(p("Interpretation: the controller reports null T_eff when returned outputs do not expose a meaningful negative decay curve. Treat null/no-valid-fit as inconclusive, not as a physical lifetime estimate.", styles["BodyText"]))
 
         if "acceptance_summary" in payload:
             rows = [["Group", "Count", "Mean GHZ", "Min", "Max", "q_conf mean", "Wilson 95 low", "Wilson 95 high"]]
@@ -340,11 +340,18 @@ def summary_sections(root: Path, story: list[Any], styles) -> None:
                 t = payload["train_efficiency"]
                 story.append(table([["Split", "Artifacts", "Accepted", "Rerun Rate", "Shots / Accepted"], ["holdout", payload.get("holdout_count"), h.get("accepted_results"), pct(h.get("rerun_rate")), h.get("shots_per_accepted_result")], ["train", payload.get("train_count"), t.get("accepted_results"), pct(t.get("rerun_rate")), t.get("shots_per_accepted_result")]]))
             elif "modes" in payload:
-                rows = [["Mode", "Accepted", "Rerun Rate", "Shots / Accepted", "Accepted Target Quality", "Governed Score"]]
+                rows = [["Mode", "Accepted", "Raw Target", "Accepted Result", "Governed Score", "Resource Adjusted"]]
                 for mode, values in payload["modes"].items():
-                    rows.append([mode, values.get("accepted_results"), pct(values.get("rerun_rate")), values.get("shots_per_accepted_result"), pct(values.get("accepted_target_quality_mean")), values.get("governed_quality_score_mean")])
+                    rows.append([
+                        mode,
+                        values.get("accepted_results"),
+                        pct(values.get("raw_target_quality")),
+                        pct(values.get("accepted_result_quality")),
+                        values.get("governed_quality_score"),
+                        values.get("resource_adjusted_quality"),
+                    ])
                 story.append(table(rows))
-                story.append(p("Ablation quality fields are split: accepted target quality is GHZ/count-derived, while governed score is a stricter software score. They should not be read as one interchangeable metric.", styles["BodyText"]))
+                story.append(p("Ablation quality fields are split into raw target quality, accepted-result quality, governed quality score, and resource-adjusted quality. They should not be collapsed into one mean-quality column.", styles["BodyText"]))
             story.append(Spacer(1, 0.12 * inch))
 
 

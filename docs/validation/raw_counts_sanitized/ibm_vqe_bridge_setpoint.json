@@ -1,9 +1,9 @@
 {
-  "artifact_sha256": "98fe8e70ea10184c4ea5cfe435dbffd3de63885bb20fe36d5b143e8f2658d6ab",
+  "artifact_sha256": "3c47996ff46198e61247a74de38e3588b5032f66b7fed7951006f295423f210b",
   "backend": "ibm_marrakesh",
   "best_energy": -1.0149809637084155,
   "best_theta": 0.2,
-  "created_utc": "2026-05-29T14:26:59.949226+00:00",
+  "created_utc": "2026-05-30T01:17:07.678595+00:00",
   "job_id": "d8cfn0qjki0s73ar7990",
   "merkle_root": "17ae7c6abc5aa96a361477e63980b5dcd0cff0f48cadeef05683be9845d8bad1",
   "qom_compact_payload_bits": 176,

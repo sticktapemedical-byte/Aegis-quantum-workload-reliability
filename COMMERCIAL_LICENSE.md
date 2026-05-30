@@ -4,6 +4,8 @@ AEGIS Quantum Workload Reliability is publicly available for noncommercial resea
 
 Commercial use is not included in the public license.
 
+This file states a rights boundary only. It should not be read as evidence of enterprise adoption, procurement readiness, product maturity, or broad community traction.
+
 Commercial use includes, but is not limited to:
 
 - production deployment inside a company, agency, or paid service
